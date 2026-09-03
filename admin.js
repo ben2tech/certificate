@@ -186,16 +186,13 @@ document.getElementById('changeBgBtn').addEventListener('click', () => {
 document.getElementById('bgFileInput').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if (!file) return;
-  const dropText = document.getElementById('uploadDropText');
+
   const chooseBtn = document.getElementById('chooseBgBtn');
-  const wasHidden = document.getElementById('uploadDrop').classList.contains('hidden');
-  if (wasHidden) {
-    document.getElementById('canvasHolder').classList.add('hidden');
-    document.getElementById('canvasFooter').classList.add('hidden');
-  }
-  document.getElementById('uploadDrop').classList.remove('hidden');
-  dropText.innerHTML = '<span class="spinner"></span> กำลังอัปโหลด...';
-  chooseBtn.classList.add('hidden');
+  const changeBtn = document.getElementById('changeBgBtn');
+  const activeBtn = chooseBtn.classList.contains('hidden') ? changeBtn : chooseBtn;
+  const originalLabel = activeBtn.textContent;
+  activeBtn.disabled = true;
+  activeBtn.innerHTML = '<span class="spinner"></span> กำลังอัปโหลด...';
 
   try {
     const ext = file.name.split('.').pop();
@@ -205,24 +202,17 @@ document.getElementById('bgFileInput').addEventListener('change', async (e) => {
     const { data } = supabaseClient.storage.from('certificates').getPublicUrl(path);
     state.currentTemplate.background_url = data.publicUrl;
 
-    const img = document.getElementById('bgImage');
-    img.src = data.publicUrl;
+    document.getElementById('bgImage').src = data.publicUrl;
     document.getElementById('canvasHolder').classList.remove('hidden');
     document.getElementById('canvasFooter').classList.remove('hidden');
     document.getElementById('uploadDrop').classList.add('hidden');
-    dropText.textContent = 'อัปโหลดรูปพื้นหลังเกียรติบัตร (JPG / PNG)';
-    chooseBtn.classList.remove('hidden');
     renderFieldMarkers();
   } catch (err) {
     console.error(err);
-    dropText.textContent = 'อัปโหลดไม่สำเร็จ ลองใหม่อีกครั้ง';
-    chooseBtn.classList.remove('hidden');
-    if (!wasHidden) {
-      document.getElementById('canvasHolder').classList.remove('hidden');
-      document.getElementById('canvasFooter').classList.remove('hidden');
-      document.getElementById('uploadDrop').classList.add('hidden');
-    }
+    alert('อัปโหลดรูปไม่สำเร็จ:\n' + (err.message || err));
   } finally {
+    activeBtn.disabled = false;
+    activeBtn.textContent = originalLabel;
     e.target.value = '';
   }
 });
