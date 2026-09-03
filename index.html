@@ -3,9 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ค้นหาเกียรติบัตร</title>
+<title>ระบบค้นหาเกียรติบัตรออนไลน์</title>
 <link rel="stylesheet" href="styles.css">
 <style>
+  body{
+    background: linear-gradient(160deg, #0f2b30 0%, #163b42 45%, #1f545c 100%);
+    min-height:100vh;
+  }
   .wrap{
     min-height:100vh;
     display:flex;
@@ -14,37 +18,69 @@
   }
   header.hero{
     width:100%;
-    padding:56px 20px 40px;
+    padding:64px 20px 36px;
     text-align:center;
   }
+  header.hero img.logo{
+    width:110px;
+    height:110px;
+    object-fit:contain;
+    margin-bottom:22px;
+    filter:drop-shadow(0 6px 18px rgba(0,0,0,.35));
+  }
   header.hero h1{
-    font-size:clamp(28px, 5vw, 40px);
+    font-family:'Sarabun', sans-serif;
+    font-weight:700;
+    color:#fff;
+    font-size:clamp(24px, 4.5vw, 34px);
     margin-bottom:10px;
+    letter-spacing:.01em;
   }
   header.hero p{
-    color:var(--ink-soft);
-    font-size:16px;
+    color:#b9d3d6;
+    font-size:15px;
     margin:0;
   }
   .search-panel{
     width:100%;
-    max-width:480px;
+    max-width:560px;
     padding:0 20px;
   }
-  .search-row{
+  .search-pill{
+    background:#fff;
+    border-radius:999px;
+    padding:6px 6px 6px 22px;
     display:flex;
+    align-items:center;
     gap:10px;
+    box-shadow:0 12px 30px rgba(0,0,0,.25);
   }
-  .search-row input{
+  .search-pill svg{flex:0 0 auto;color:#7d8a9a;}
+  .search-pill input{
     flex:1;
-    text-align:center;
-    letter-spacing:.04em;
-    font-size:18px;
-    padding:14px;
+    border:none;
+    padding:14px 4px;
+    font-size:16px;
+    background:transparent;
   }
-  .search-row button{
-    padding:14px 22px;
-    white-space:nowrap;
+  .search-pill input:focus-visible{outline:none;}
+  .search-pill button{
+    flex:0 0 auto;
+    background:#2b6fb3;
+    color:#fff;
+    padding:13px 28px;
+    border-radius:999px;
+    font-weight:600;
+    font-size:15px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    transition:background .15s ease;
+  }
+  .search-pill button:hover{background:#245c96;}
+  .search-pill button:disabled{background:#8ea6bc;cursor:not-allowed;}
+  #searchMsg .msg{
+    background:rgba(255,255,255,.94);
   }
   .result-area{
     width:100%;
@@ -53,15 +89,15 @@
   }
   .cert-frame{
     background:var(--paper);
-    border:1px solid var(--line);
-    border-radius:var(--radius);
+    border-radius:10px;
     padding:16px;
+    box-shadow:0 16px 40px rgba(0,0,0,.3);
   }
   .cert-frame canvas{
     width:100%;
     height:auto;
     display:block;
-    border-radius:2px;
+    border-radius:4px;
   }
   .cert-name{
     text-align:center;
@@ -69,6 +105,7 @@
   }
   .cert-name h2{
     font-size:24px;
+    color:#fff;
   }
   .cert-actions{
     display:flex;
@@ -77,40 +114,47 @@
     margin-top:22px;
     flex-wrap:wrap;
   }
+  .cert-actions .btn-primary{
+    background:#2b6fb3;
+  }
+  .cert-actions .btn-primary:hover{background:#245c96;}
   .empty-state{
     text-align:center;
-    color:var(--ink-soft);
+    color:#b9d3d6;
     padding:30px 20px;
   }
   footer{
-    padding:24px 20px 40px;
+    padding:24px 20px 44px;
     text-align:center;
     font-size:13px;
-    color:var(--ink-soft);
+    color:#7fa1a6;
   }
-  footer a{color:var(--ink-soft);}
 </style>
 </head>
 <body>
-<div class="top-rule"></div>
 <div class="wrap">
 
   <header class="hero">
-    <h1>ค้นหาเกียรติบัตร</h1>
-    <p>กรอกรหัสนักเรียนเพื่อดูและดาวน์โหลดเกียรติบัตรของคุณ</p>
+    <img class="logo" src="logo.png" alt="ตราโรงเรียน">
+    <h1>ระบบค้นหาเกียรติบัตรออนไลน์</h1>
+    <p>กรอกรหัสนักเรียนเพื่อค้นหาและพิมพ์เกียรติบัตร</p>
   </header>
 
   <div class="search-panel">
-    <form id="searchForm" class="search-row">
-      <input type="text" id="codeInput" placeholder="กรอกรหัสนักเรียน" autocomplete="off" inputmode="numeric">
-      <button type="submit" class="btn-primary" id="searchBtn">ค้นหา</button>
+    <form id="searchForm" class="search-pill">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+      <input type="text" id="codeInput" placeholder="กรอกรหัสนักเรียน เช่น 12345" autocomplete="off" inputmode="numeric">
+      <button type="submit" id="searchBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        ค้นหา
+      </button>
     </form>
     <div id="searchMsg"></div>
   </div>
 
   <div class="result-area" id="resultArea"></div>
 
-  <footer>ระบบค้นหาเกียรติบัตรออนไลน์</footer>
+  <footer>ระบบออกเกียรติบัตรออนไลน์ (E-Certificate Management System)</footer>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -131,6 +175,7 @@ form.addEventListener('submit', async (e) => {
   if (!code) return;
 
   btn.disabled = true;
+  const originalLabel = btn.innerHTML;
   btn.innerHTML = '<span class="spinner"></span> กำลังค้นหา';
 
   try {
@@ -158,7 +203,7 @@ form.addEventListener('submit', async (e) => {
     msgEl.innerHTML = `<div class="msg msg-error">เกิดข้อผิดพลาดในการค้นหา ลองใหม่อีกครั้ง</div>`;
   } finally {
     btn.disabled = false;
-    btn.textContent = 'ค้นหา';
+    btn.innerHTML = originalLabel;
   }
 });
 
