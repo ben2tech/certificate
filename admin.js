@@ -9,6 +9,9 @@ const state = {
   editingStudentId: null,
 };
 
+// ============================================
+// FIELD LABELS
+// ============================================
 const FIELD_KEY_LABELS = {
   name: 'ชื่อ-นามสกุล',
   student_code: 'รหัสนักเรียน',
@@ -21,7 +24,9 @@ const loginScreen = document.getElementById('loginScreen');
 const appEl = document.getElementById('app');
 
 async function checkSession() {
-  const { data: { session } } = await supabaseClient.auth.getSession();
+  const {
+    data: { session }
+  } = await supabaseClient.auth.getSession();
 
   if (session) {
     showApp(session);
@@ -42,69 +47,77 @@ function showApp(session) {
   loadStudents();
 }
 
-document.getElementById('loginForm').addEventListener(
-  'submit',
-  async (e) => {
+document.getElementById('loginForm')
+  .addEventListener(
+    'submit',
+    async (e) => {
 
-    e.preventDefault();
+      e.preventDefault();
 
-    const email =
-      document.getElementById('loginEmail').value.trim();
+      const email =
+        document.getElementById('loginEmail')
+          .value
+          .trim();
 
-    const password =
-      document.getElementById('loginPassword').value;
+      const password =
+        document.getElementById('loginPassword')
+          .value;
 
-    const btn =
-      document.getElementById('loginBtn');
+      const btn =
+        document.getElementById('loginBtn');
 
-    const msg =
-      document.getElementById('loginMsg');
+      const msg =
+        document.getElementById('loginMsg');
 
-    msg.innerHTML = '';
+      msg.innerHTML = '';
 
-    btn.disabled = true;
+      btn.disabled = true;
 
-    btn.innerHTML =
-      '<span class="spinner"></span> กำลังเข้าสู่ระบบ';
+      btn.innerHTML =
+        '<span class="spinner"></span> กำลังเข้าสู่ระบบ';
 
-    try {
+      try {
 
-      const {
-        data,
-        error
-      } = await supabaseClient.auth.signInWithPassword({
-        email,
-        password
-      });
+        const {
+          data,
+          error
+        } =
+          await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+          });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      showApp(data.session);
+        showApp(data.session);
 
-    } catch (err) {
+      } catch (err) {
 
-      msg.innerHTML =
-        `<div class="msg msg-error">
-          อีเมลหรือรหัสผ่านไม่ถูกต้อง
-        </div>`;
+        msg.innerHTML =
+          `<div class="msg msg-error">
+            อีเมลหรือรหัสผ่านไม่ถูกต้อง
+          </div>`;
 
-    } finally {
+      } finally {
 
-      btn.disabled = false;
-      btn.textContent = 'เข้าสู่ระบบ';
+        btn.disabled = false;
+        btn.textContent = 'เข้าสู่ระบบ';
 
+      }
     }
-  }
-);
+  );
 
 document.getElementById('logoutBtn')
-  .addEventListener('click', async () => {
+  .addEventListener(
+    'click',
+    async () => {
 
-    await supabaseClient.auth.signOut();
+      await supabaseClient.auth.signOut();
 
-    checkSession();
+      checkSession();
 
-  });
+    }
+  );
 
 checkSession();
 
@@ -114,29 +127,32 @@ checkSession();
 document.querySelectorAll('.tabs button')
   .forEach(btn => {
 
-    btn.addEventListener('click', () => {
+    btn.addEventListener(
+      'click',
+      () => {
 
-      document
-        .querySelectorAll('.tabs button')
-        .forEach(b =>
-          b.classList.remove('active')
-        );
+        document
+          .querySelectorAll('.tabs button')
+          .forEach(b =>
+            b.classList.remove('active')
+          );
 
-      btn.classList.add('active');
+        btn.classList.add('active');
 
-      document
-        .querySelectorAll('.panel')
-        .forEach(p =>
-          p.classList.remove('active')
-        );
+        document
+          .querySelectorAll('.panel')
+          .forEach(p =>
+            p.classList.remove('active')
+          );
 
-      document
-        .getElementById(
-          'panel-' + btn.dataset.tab
-        )
-        .classList.add('active');
+        document
+          .getElementById(
+            'panel-' + btn.dataset.tab
+          )
+          .classList.add('active');
 
-    });
+      }
+    );
 
   });
 
@@ -173,12 +189,16 @@ async function loadTemplates() {
   const {
     data,
     error
-  } = await supabaseClient
-    .from('templates')
-    .select('*')
-    .order('created_at', {
-      ascending: false
-    });
+  } =
+    await supabaseClient
+      .from('templates')
+      .select('*')
+      .order(
+        'created_at',
+        {
+          ascending: false
+        }
+      );
 
   if (error) {
     console.error(error);
@@ -284,22 +304,28 @@ function populateTemplateSelects() {
 }
 
 document.getElementById('newTplBtn')
-  .addEventListener('click', () => {
+  .addEventListener(
+    'click',
+    () => {
 
-    openEditor(null);
+      openEditor(null);
 
-  });
+    }
+  );
 
 document.getElementById('backToTplBtn')
-  .addEventListener('click', () => {
+  .addEventListener(
+    'click',
+    () => {
 
-    document
-      .getElementById('panel-editor')
-      .classList.remove('active');
+      document
+        .getElementById('panel-editor')
+        .classList.remove('active');
 
-    goToTemplatesTab();
+      goToTemplatesTab();
 
-  });
+    }
+  );
 
 // ============================================
 // TEMPLATE EDITOR
@@ -382,22 +408,28 @@ function openEditor(tpl) {
 // UPLOAD BACKGROUND
 // ============================================
 document.getElementById('chooseBgBtn')
-  .addEventListener('click', () => {
+  .addEventListener(
+    'click',
+    () => {
 
-    document
-      .getElementById('bgFileInput')
-      .click();
+      document
+        .getElementById('bgFileInput')
+        .click();
 
-  });
+    }
+  );
 
 document.getElementById('changeBgBtn')
-  .addEventListener('click', () => {
+  .addEventListener(
+    'click',
+    () => {
 
-    document
-      .getElementById('bgFileInput')
-      .click();
+      document
+        .getElementById('bgFileInput')
+        .click();
 
-  });
+    }
+  );
 
 document.getElementById('bgFileInput')
   .addEventListener(
@@ -442,10 +474,11 @@ document.getElementById('bgFileInput')
 
         const {
           error: upErr
-        } = await supabaseClient
-          .storage
-          .from('certificates')
-          .upload(path, file);
+        } =
+          await supabaseClient
+            .storage
+            .from('certificates')
+            .upload(path, file);
 
         if (upErr) throw upErr;
 
@@ -499,7 +532,6 @@ document.getElementById('bgFileInput')
 
     }
   );
-
 // ============================================
 // FIELD EDITOR
 // ============================================
@@ -507,54 +539,90 @@ document
   .getElementById('canvasHolder')
   .addEventListener('click', (e) => {
 
-    if (
-      e.target.closest('.field-marker')
-    ) return;
+    // ถ้าคลิกที่ marker ไม่สร้าง field ใหม่
+    if (e.target.closest('.field-marker')) {
+      return;
+    }
+
+    // สำคัญ:
+    // ใช้รูปพื้นหลังจริงเป็นระบบพิกัด
+    // ไม่ใช้ canvasHolder เพราะขนาดอาจต่างกันบน iPad
+    const img =
+      document.getElementById('bgImage');
 
     const rect =
-      e.currentTarget.getBoundingClientRect();
+      img.getBoundingClientRect();
 
-    const xPct =
+    if (!rect.width || !rect.height) {
+      return;
+    }
+
+    let xPct =
       (e.clientX - rect.left) /
       rect.width;
 
-    const yPct =
+    let yPct =
       (e.clientY - rect.top) /
       rect.height;
+
+    // ป้องกันค่าเกิน 0-1
+    xPct =
+      Math.min(
+        1,
+        Math.max(0, xPct)
+      );
+
+    yPct =
+      Math.min(
+        1,
+        Math.max(0, yPct)
+      );
 
     addField(xPct, yPct);
 
   });
 
+
 document
   .getElementById('addFieldBtn')
-  .addEventListener('click', () =>
-    addField(0.5, 0.5)
+  .addEventListener(
+    'click',
+    () =>
+      addField(0.5, 0.5)
   );
+
 
 function addField(xPct, yPct) {
 
   const field = {
 
-    id: crypto.randomUUID(),
+    id:
+      crypto.randomUUID(),
 
-    key: 'name',
+    key:
+      'name',
 
-    label: 'ชื่อ-นามสกุล',
+    label:
+      'ชื่อ-นามสกุล',
 
     xPct,
 
     yPct,
 
-    fontSize: 36,
+    fontSize:
+      36,
 
-    color: '#16264a',
+    color:
+      '#16264a',
 
-    align: 'center',
+    align:
+      'center',
 
-    fontWeight: 600,
+    fontWeight:
+      600,
 
-    fontFamily: 'Sarabun'
+    fontFamily:
+      'Sarabun'
 
   };
 
@@ -570,41 +638,80 @@ function addField(xPct, yPct) {
   renderFieldDetail();
 }
 
+
+// ============================================
+// RENDER FIELD MARKERS
+// ============================================
 function renderFieldMarkers() {
 
   const holder =
-    document.getElementById('canvasHolder');
+    document.getElementById(
+      'canvasHolder'
+    );
 
   holder
-    .querySelectorAll('.field-marker')
-    .forEach(m => m.remove());
+    .querySelectorAll(
+      '.field-marker'
+    )
+    .forEach(
+      m => m.remove()
+    );
 
   state.currentTemplate.fields
     .forEach(field => {
 
       const marker =
-        document.createElement('div');
+        document.createElement(
+          'div'
+        );
 
       marker.className =
         'field-marker' +
         (
-          field.id === state.selectedFieldId
+          field.id ===
+          state.selectedFieldId
             ? ' selected'
             : ''
         );
 
+      // ======================================
+      // iPad / Touch
+      // ======================================
+      // ป้องกัน Safari/iPadOS เอา pointer
+      // ไปตีความเป็น scroll / gesture
+      marker.style.touchAction =
+        'none';
+
+      marker.style.webkitUserSelect =
+        'none';
+
+      marker.style.userSelect =
+        'none';
+
+
+      // ======================================
+      // ตำแหน่ง
+      // ======================================
       marker.style.left =
-        (field.xPct * 100) + '%';
+        (field.xPct * 100) +
+        '%';
 
       marker.style.top =
-        (field.yPct * 100) + '%';
+        (field.yPct * 100) +
+        '%';
+
 
       marker.textContent =
-        field.label || field.key;
+        field.label ||
+        field.key;
 
       marker.dataset.fieldId =
         field.id;
 
+
+      // ======================================
+      // เลือก field
+      // ======================================
       marker.addEventListener(
         'click',
         (ev) => {
@@ -615,23 +722,37 @@ function renderFieldMarkers() {
             field.id;
 
           renderFieldMarkers();
+
           renderFieldList();
+
           renderFieldDetail();
 
         }
       );
 
+
+      // ======================================
+      // ลาก field
+      // ======================================
       enableDrag(
         marker,
         holder,
         field
       );
 
-      holder.appendChild(marker);
+
+      holder.appendChild(
+        marker
+      );
 
     });
+
 }
 
+
+// ============================================
+// DRAG FIELD
+// ============================================
 function enableDrag(
   marker,
   holder,
@@ -644,63 +765,120 @@ function enableDrag(
 
       ev.preventDefault();
 
+      ev.stopPropagation();
+
       marker.setPointerCapture(
         ev.pointerId
       );
 
+
       const move =
         (moveEv) => {
 
-          const rect =
-            holder.getBoundingClientRect();
+          // ====================================
+          // สำคัญมาก
+          // ใช้ bgImage เป็น coordinate system
+          // ====================================
+          const img =
+            document.getElementById(
+              'bgImage'
+            );
 
+          const rect =
+            img.getBoundingClientRect();
+
+          if (
+            !rect.width ||
+            !rect.height
+          ) {
+            return;
+          }
+
+
+          // ====================================
+          // คำนวณเป็น %
+          // ====================================
           let xPct =
-            (moveEv.clientX -
-              rect.left) /
+            (
+              moveEv.clientX -
+              rect.left
+            ) /
             rect.width;
 
           let yPct =
-            (moveEv.clientY -
-              rect.top) /
+            (
+              moveEv.clientY -
+              rect.top
+            ) /
             rect.height;
 
+
+          // ====================================
+          // จำกัด 0 - 1
+          // ====================================
           xPct =
             Math.min(
               1,
-              Math.max(0, xPct)
+              Math.max(
+                0,
+                xPct
+              )
             );
 
           yPct =
             Math.min(
               1,
-              Math.max(0, yPct)
+              Math.max(
+                0,
+                yPct
+              )
             );
 
-          field.xPct = xPct;
 
-          field.yPct = yPct;
+          // ====================================
+          // บันทึกพิกัด
+          // ====================================
+          field.xPct =
+            xPct;
 
+          field.yPct =
+            yPct;
+
+
+          // ====================================
+          // อัปเดต marker
+          // ====================================
           marker.style.left =
-            (xPct * 100) + '%';
+            (xPct * 100) +
+            '%';
 
           marker.style.top =
-            (yPct * 100) + '%';
+            (yPct * 100) +
+            '%';
 
         };
 
-      const up = () => {
 
-        marker.removeEventListener(
-          'pointermove',
-          move
-        );
+      const up =
+        () => {
 
-        marker.removeEventListener(
-          'pointerup',
-          up
-        );
+          marker.removeEventListener(
+            'pointermove',
+            move
+          );
 
-      };
+          marker.removeEventListener(
+            'pointerup',
+            up
+          );
+
+          marker.removeEventListener(
+            'pointercancel',
+            up
+          );
+
+        };
+
 
       marker.addEventListener(
         'pointermove',
@@ -712,14 +890,26 @@ function enableDrag(
         up
       );
 
+      marker.addEventListener(
+        'pointercancel',
+        up
+      );
+
     }
   );
+
 }
 
+
+// ============================================
+// FIELD LIST
+// ============================================
 function renderFieldList() {
 
   const list =
-    document.getElementById('fieldList');
+    document.getElementById(
+      'fieldList'
+    );
 
   list.innerHTML = '';
 
@@ -727,28 +917,37 @@ function renderFieldList() {
     .forEach(field => {
 
       const item =
-        document.createElement('div');
+        document.createElement(
+          'div'
+        );
 
       item.className =
         'field-item' +
         (
-          field.id === state.selectedFieldId
+          field.id ===
+          state.selectedFieldId
             ? ' selected'
             : ''
         );
 
+
       item.innerHTML = `
         <div>
+
           ${escapeHtml(
-            field.label || field.key
+            field.label ||
+            field.key
           )}
 
           <small>
             ${escapeHtml(
-              FIELD_KEY_LABELS[field.key] ||
+              FIELD_KEY_LABELS[
+                field.key
+              ] ||
               field.key
             )}
           </small>
+
         </div>
 
         <button
@@ -760,6 +959,10 @@ function renderFieldList() {
         </button>
       `;
 
+
+      // ======================================
+      // เลือก field จากรายการ
+      // ======================================
       item.addEventListener(
         'click',
         () => {
@@ -768,12 +971,18 @@ function renderFieldList() {
             field.id;
 
           renderFieldMarkers();
+
           renderFieldList();
+
           renderFieldDetail();
 
         }
       );
 
+
+      // ======================================
+      // ลบ field
+      // ======================================
       item
         .querySelector('.del')
         .addEventListener(
@@ -785,38 +994,59 @@ function renderFieldList() {
             state.currentTemplate.fields =
               state.currentTemplate.fields
                 .filter(
-                  f => f.id !== field.id
+                  f =>
+                    f.id !==
+                    field.id
                 );
+
 
             if (
               state.selectedFieldId ===
               field.id
             ) {
+
               state.selectedFieldId =
                 null;
+
             }
 
+
             renderFieldMarkers();
+
             renderFieldList();
+
             renderFieldDetail();
 
           }
         );
 
-      list.appendChild(item);
+
+      list.appendChild(
+        item
+      );
 
     });
+
 }
 
+
+// ============================================
+// FIELD DETAIL
+// ============================================
 function renderFieldDetail() {
 
   const wrap =
-    document.getElementById('fieldDetail');
+    document.getElementById(
+      'fieldDetail'
+    );
 
   const field =
     state.currentTemplate.fields.find(
-      f => f.id === state.selectedFieldId
+      f =>
+        f.id ===
+        state.selectedFieldId
     );
+
 
   if (!field) {
 
@@ -825,16 +1055,20 @@ function renderFieldDetail() {
     return;
   }
 
+
   const isCustom =
     field.key !== 'name' &&
     field.key !== 'student_code';
+
 
   wrap.innerHTML = `
     <div class="field-detail">
 
       <div class="field">
 
-        <label>ประเภทข้อมูล</label>
+        <label>
+          ประเภทข้อมูล
+        </label>
 
         <select id="fd_keyType">
 
@@ -854,8 +1088,13 @@ function renderFieldDetail() {
 
       </div>
 
+
       <div
-        class="field ${isCustom ? '' : 'hidden'}"
+        class="field ${
+          isCustom
+            ? ''
+            : 'hidden'
+        }"
         id="fd_customKeyWrap"
       >
 
@@ -877,6 +1116,7 @@ function renderFieldDetail() {
 
       </div>
 
+
       <div class="field">
 
         <label>
@@ -893,6 +1133,7 @@ function renderFieldDetail() {
         >
 
       </div>
+
 
       <div class="row2">
 
@@ -912,9 +1153,12 @@ function renderFieldDetail() {
 
         </div>
 
+
         <div class="field">
 
-          <label>สี</label>
+          <label>
+            สี
+          </label>
 
           <input
             type="color"
@@ -926,11 +1170,14 @@ function renderFieldDetail() {
 
       </div>
 
+
       <div class="row2">
 
         <div class="field">
 
-          <label>การจัดวาง</label>
+          <label>
+            การจัดวาง
+          </label>
 
           <select id="fd_align">
 
@@ -949,6 +1196,7 @@ function renderFieldDetail() {
           </select>
 
         </div>
+
 
         <div class="field">
 
@@ -979,6 +1227,7 @@ function renderFieldDetail() {
     </div>
   `;
 
+
   document.getElementById(
     'fd_keyType'
   ).value =
@@ -986,78 +1235,104 @@ function renderFieldDetail() {
       ? 'custom'
       : field.key;
 
+
   document.getElementById(
     'fd_align'
   ).value =
     field.align;
 
+
   document.getElementById(
     'fd_weight'
   ).value =
-    String(field.fontWeight);
+    String(
+      field.fontWeight
+    );
 
-  const sync = () => {
 
-    const keyType =
-      document.getElementById(
-        'fd_keyType'
-      ).value;
+  // ==========================================
+  // Sync
+  // ==========================================
+  const sync =
+    () => {
 
-    if (keyType === 'custom') {
+      const keyType =
+        document.getElementById(
+          'fd_keyType'
+        ).value;
 
-      field.key =
+
+      if (
+        keyType ===
+        'custom'
+      ) {
+
+        field.key =
+          document
+            .getElementById(
+              'fd_customKey'
+            )
+            .value
+            .trim() ||
+          'field';
+
+      } else {
+
+        field.key =
+          keyType;
+
+      }
+
+
+      field.label =
         document
           .getElementById(
-            'fd_customKey'
+            'fd_label'
           )
           .value
-          .trim() || 'field';
+          .trim() ||
+        FIELD_KEY_LABELS[
+          field.key
+        ] ||
+        field.key;
 
-    } else {
 
-      field.key = keyType;
+      field.fontSize =
+        parseInt(
+          document.getElementById(
+            'fd_fontSize'
+          ).value,
+          10
+        ) || 32;
 
-    }
 
-    field.label =
-      document
-        .getElementById('fd_label')
-        .value
-        .trim() ||
-      FIELD_KEY_LABELS[field.key] ||
-      field.key;
-
-    field.fontSize =
-      parseInt(
+      field.color =
         document.getElementById(
-          'fd_fontSize'
-        ).value,
-        10
-      ) || 32;
+          'fd_color'
+        ).value;
 
-    field.color =
-      document.getElementById(
-        'fd_color'
-      ).value;
 
-    field.align =
-      document.getElementById(
-        'fd_align'
-      ).value;
-
-    field.fontWeight =
-      parseInt(
+      field.align =
         document.getElementById(
-          'fd_weight'
-        ).value,
-        10
-      );
+          'fd_align'
+        ).value;
 
-    renderFieldMarkers();
 
-    renderFieldList();
+      field.fontWeight =
+        parseInt(
+          document.getElementById(
+            'fd_weight'
+          ).value,
+          10
+        );
 
-  };
+
+      renderFieldMarkers();
+
+      renderFieldList();
+
+    };
+
 
   document.getElementById(
     'fd_keyType'
@@ -1075,13 +1350,15 @@ function renderFieldDetail() {
             .getElementById(
               'fd_keyType'
             )
-            .value !== 'custom'
+            .value !==
+            'custom'
         );
 
       sync();
 
     }
   );
+
 
   [
     'fd_customKey',
@@ -1090,19 +1367,20 @@ function renderFieldDetail() {
     'fd_color',
     'fd_align',
     'fd_weight'
-  ].forEach(id => {
+  ].forEach(
+    id => {
 
-    document
-      .getElementById(id)
-      .addEventListener(
-        'input',
-        sync
-      );
+      document
+        .getElementById(id)
+        .addEventListener(
+          'input',
+          sync
+        );
 
-  });
+    }
+  );
 
 }
-
 // ============================================
 // SAVE TEMPLATE
 // ============================================
@@ -1126,9 +1404,10 @@ document.getElementById('saveTplBtn')
         return;
       }
 
+
       if (
-        !state.currentTemplate
-          .background_url
+        !state.currentTemplate ||
+        !state.currentTemplate.background_url
       ) {
 
         alert(
@@ -1137,6 +1416,7 @@ document.getElementById('saveTplBtn')
 
         return;
       }
+
 
       const btn =
         document.getElementById(
@@ -1148,6 +1428,7 @@ document.getElementById('saveTplBtn')
       btn.innerHTML =
         '<span class="spinner"></span> กำลังบันทึก';
 
+
       const payload = {
 
         name,
@@ -1157,9 +1438,11 @@ document.getElementById('saveTplBtn')
             .background_url,
 
         fields:
-          state.currentTemplate.fields
+          state.currentTemplate
+            .fields
 
       };
+
 
       try {
 
@@ -1169,29 +1452,37 @@ document.getElementById('saveTplBtn')
 
           const {
             error
-          } = await supabaseClient
-            .from('templates')
-            .update(payload)
-            .eq(
-              'id',
-              state.currentTemplate.id
-            );
+          } =
+            await supabaseClient
+              .from('templates')
+              .update(payload)
+              .eq(
+                'id',
+                state.currentTemplate.id
+              );
 
-          if (error) throw error;
+          if (error) {
+            throw error;
+          }
 
         } else {
 
           const {
             error
-          } = await supabaseClient
-            .from('templates')
-            .insert(payload);
+          } =
+            await supabaseClient
+              .from('templates')
+              .insert(payload);
 
-          if (error) throw error;
+          if (error) {
+            throw error;
+          }
 
         }
 
+
         await loadTemplates();
+
 
         document
           .getElementById(
@@ -1201,7 +1492,9 @@ document.getElementById('saveTplBtn')
             'active'
           );
 
+
         goToTemplatesTab();
+
 
       } catch (err) {
 
@@ -1211,6 +1504,7 @@ document.getElementById('saveTplBtn')
           'บันทึกไม่สำเร็จ: ' +
           err.message
         );
+
 
       } finally {
 
@@ -1224,6 +1518,7 @@ document.getElementById('saveTplBtn')
     }
   );
 
+
 // ============================================
 // STUDENTS
 // ============================================
@@ -1232,15 +1527,17 @@ async function loadStudents() {
   const {
     data,
     error
-  } = await supabaseClient
-    .from('students')
-    .select('*, templates(name)')
-    .order(
-      'created_at',
-      {
-        ascending: false
-      }
-    );
+  } =
+    await supabaseClient
+      .from('students')
+      .select('*, templates(name)')
+      .order(
+        'created_at',
+        {
+          ascending: false
+        }
+      );
+
 
   if (error) {
 
@@ -1249,12 +1546,19 @@ async function loadStudents() {
     return;
   }
 
+
   state.students =
     data || [];
 
+
   renderStudentsTable();
+
 }
 
+
+// ============================================
+// RENDER STUDENTS TABLE
+// ============================================
 function renderStudentsTable() {
 
   const tbody =
@@ -1267,21 +1571,29 @@ function renderStudentsTable() {
       'studentsEmpty'
     );
 
+
   const filterTpl =
     document.getElementById(
       'filterTemplate'
     ).value;
 
+
   const search =
     document.getElementById(
       'studentSearch'
-    ).value
+    )
+      .value
       .trim()
       .toLowerCase();
+
 
   let rows =
     state.students;
 
+
+  // ==========================================
+  // FILTER TEMPLATE
+  // ==========================================
   if (filterTpl) {
 
     rows =
@@ -1293,6 +1605,10 @@ function renderStudentsTable() {
 
   }
 
+
+  // ==========================================
+  // SEARCH
+  // ==========================================
   if (search) {
 
     rows =
@@ -1300,7 +1616,8 @@ function renderStudentsTable() {
         s =>
 
           String(
-            s.student_code || ''
+            s.student_code ||
+            ''
           )
             .toLowerCase()
             .includes(search)
@@ -1308,17 +1625,23 @@ function renderStudentsTable() {
           ||
 
           String(
-            s.name || ''
+            s.name ||
+            ''
           )
             .toLowerCase()
             .includes(search)
+
       );
 
   }
 
+
   tbody.innerHTML = '';
 
-  if (rows.length === 0) {
+
+  if (
+    rows.length === 0
+  ) {
 
     empty.classList.remove(
       'hidden'
@@ -1332,76 +1655,103 @@ function renderStudentsTable() {
 
   }
 
-  rows.forEach(s => {
 
-    const tr =
-      document.createElement('tr');
+  // ==========================================
+  // ROWS
+  // ==========================================
+  rows.forEach(
+    s => {
 
-    tr.innerHTML = `
+      const tr =
+        document.createElement(
+          'tr'
+        );
 
-      <td>
-        ${escapeHtml(
-          s.student_code
-        )}
-      </td>
 
-      <td>
-        ${escapeHtml(
-          s.name
-        )}
-      </td>
+      tr.innerHTML = `
 
-      <td>
-        ${escapeHtml(
-          s.templates
-            ? s.templates.name
-            : '—'
-        )}
-      </td>
+        <td>
+          ${escapeHtml(
+            s.student_code
+          )}
+        </td>
 
-      <td
-        style="white-space:nowrap;"
-      >
+        <td>
+          ${escapeHtml(
+            s.name
+          )}
+        </td>
 
-        <button
-          class="btn-secondary editBtn"
-          style="
-            padding:5px 12px;
-            font-size:13px;
-          "
+        <td>
+          ${escapeHtml(
+            s.templates
+              ? s.templates.name
+              : '—'
+          )}
+        </td>
+
+        <td
+          style="white-space:nowrap;"
         >
-          แก้ไข
-        </button>
 
-        <button
-          class="btn-danger delBtn"
-        >
-          ลบ
-        </button>
+          <button
+            class="btn-secondary editBtn"
+            style="
+              padding:5px 12px;
+              font-size:13px;
+            "
+          >
+            แก้ไข
+          </button>
 
-      </td>
+          <button
+            class="btn-danger delBtn"
+          >
+            ลบ
+          </button>
 
-    `;
+        </td>
 
-    tr.querySelector(
-      '.editBtn'
-    ).addEventListener(
-      'click',
-      () => openStudentModal(s)
-    );
+      `;
 
-    tr.querySelector(
-      '.delBtn'
-    ).addEventListener(
-      'click',
-      () => deleteStudent(s)
-    );
 
-    tbody.appendChild(tr);
+      // ========================================
+      // EDIT
+      // ========================================
+      tr.querySelector(
+        '.editBtn'
+      )
+        .addEventListener(
+          'click',
+          () =>
+            openStudentModal(s)
+        );
 
-  });
+
+      // ========================================
+      // DELETE
+      // ========================================
+      tr.querySelector(
+        '.delBtn'
+      )
+        .addEventListener(
+          'click',
+          () =>
+            deleteStudent(s)
+        );
+
+
+      tbody.appendChild(tr);
+
+    }
+  );
+
 }
 
+
+// ============================================
+// FILTER / SEARCH EVENTS
+// ============================================
 document
   .getElementById(
     'filterTemplate'
@@ -1410,6 +1760,7 @@ document
     'change',
     renderStudentsTable
   );
+
 
 document
   .getElementById(
@@ -1420,8 +1771,9 @@ document
     renderStudentsTable
   );
 
+
 // ============================================
-// DELETE ALL STUDENTS BUTTON
+// DELETE ALL STUDENTS
 // ============================================
 (function setupDeleteAllStudentsButton() {
 
@@ -1430,44 +1782,64 @@ document
       'importCsvBtn'
     );
 
-  if (!importBtn) return;
 
+  if (!importBtn) {
+    return;
+  }
+
+
+  // ป้องกันสร้างปุ่มซ้ำ
   if (
     document.getElementById(
       'deleteAllStudentsBtn'
     )
-  ) return;
+  ) {
+    return;
+  }
+
 
   const btn =
     document.createElement(
       'button'
     );
 
-  btn.type = 'button';
+
+  btn.type =
+    'button';
+
 
   btn.id =
     'deleteAllStudentsBtn';
 
+
   btn.className =
     'btn-danger';
+
 
   btn.textContent =
     '🗑 ลบนักเรียนทั้งหมด';
 
+
   btn.style.padding =
     '8px 14px';
+
 
   importBtn.insertAdjacentElement(
     'afterend',
     btn
   );
 
+
   btn.addEventListener(
     'click',
     async () => {
 
+      // ======================================
+      // ไม่มีข้อมูล
+      // ======================================
       if (
-        state.students.length === 0
+        state.students.length ===
+        0
       ) {
 
         alert(
@@ -1477,18 +1849,30 @@ document
         return;
       }
 
+
+      // ======================================
+      // CONFIRM 1
+      // ======================================
       const confirmDelete =
         confirm(
           `⚠️ ต้องการลบนักเรียนทั้งหมด ${state.students.length} คนใช่หรือไม่?\n\n` +
           `ข้อมูลทั้งหมดจะถูกลบออกจากฐานข้อมูล และไม่สามารถกู้คืนได้`
         );
 
-      if (!confirmDelete) return;
 
+      if (!confirmDelete) {
+        return;
+      }
+
+
+      // ======================================
+      // CONFIRM 2
+      // ======================================
       const confirmText =
         prompt(
           'เพื่อยืนยัน กรุณาพิมพ์คำว่า:\n\nลบทั้งหมด'
         );
+
 
       if (
         confirmText !==
@@ -1502,38 +1886,50 @@ document
         return;
       }
 
+
       const originalText =
         btn.textContent;
 
-      btn.disabled = true;
+
+      btn.disabled =
+        true;
+
 
       btn.textContent =
         'กำลังลบ...';
+
 
       try {
 
         const {
           error
-        } = await supabaseClient
-          .from('students')
-          .delete()
-          .not(
-            'id',
-            'is',
-            null
-          );
+        } =
+          await supabaseClient
+            .from('students')
+            .delete()
+            .not(
+              'id',
+              'is',
+              null
+            );
+
 
         if (error) {
           throw error;
         }
 
-        state.students = [];
+
+        state.students =
+          [];
+
 
         renderStudentsTable();
+
 
         alert(
           'ลบนักเรียนทั้งหมดเรียบร้อยแล้ว'
         );
+
 
       } catch (err) {
 
@@ -1541,6 +1937,7 @@ document
           'Delete all students error:',
           err
         );
+
 
         alert(
           'ลบไม่สำเร็จ:\n' +
@@ -1550,9 +1947,12 @@ document
           )
         );
 
+
       } finally {
 
-        btn.disabled = false;
+        btn.disabled =
+          false;
+
 
         btn.textContent =
           originalText;
@@ -1563,6 +1963,7 @@ document
   );
 
 })();
+
 
 // ============================================
 // DELETE ONE STUDENT
@@ -1577,15 +1978,18 @@ async function deleteStudent(s) {
     return;
   }
 
+
   const {
     error
-  } = await supabaseClient
-    .from('students')
-    .delete()
-    .eq(
-      'id',
-      s.id
-    );
+  } =
+    await supabaseClient
+      .from('students')
+      .delete()
+      .eq(
+        'id',
+        s.id
+      );
+
 
   if (error) {
 
@@ -1597,17 +2001,23 @@ async function deleteStudent(s) {
     return;
   }
 
-  await loadStudents();
-}
 
+  await loadStudents();
+
+}
 // ============================================
 // ADD / EDIT STUDENT
 // ============================================
+
 const studentModal =
   document.getElementById(
     'studentModal'
   );
 
+
+// ============================================
+// ADD STUDENT BUTTON
+// ============================================
 document
   .getElementById(
     'addStudentBtn'
@@ -1618,6 +2028,10 @@ document
       openStudentModal(null)
   );
 
+
+// ============================================
+// CANCEL STUDENT MODAL
+// ============================================
 document
   .getElementById(
     'studentCancelBtn'
@@ -1630,13 +2044,23 @@ document
       )
   );
 
-function openStudentModal(student) {
+
+// ============================================
+// OPEN STUDENT MODAL
+// ============================================
+function openStudentModal(
+  student
+) {
 
   state.editingStudentId =
     student
       ? student.id
       : null;
 
+
+  // ==========================================
+  // TITLE
+  // ==========================================
   document
     .getElementById(
       'studentModalTitle'
@@ -1646,6 +2070,10 @@ function openStudentModal(student) {
         ? 'แก้ไขนักเรียน'
         : 'เพิ่มนักเรียน';
 
+
+  // ==========================================
+  // STUDENT CODE
+  // ==========================================
   document
     .getElementById(
       'studentCode'
@@ -1655,6 +2083,10 @@ function openStudentModal(student) {
         ? student.student_code
         : '';
 
+
+  // ==========================================
+  // NAME
+  // ==========================================
   document
     .getElementById(
       'studentName'
@@ -1664,16 +2096,25 @@ function openStudentModal(student) {
         ? student.name
         : '';
 
+
+  // ==========================================
+  // MESSAGE
+  // ==========================================
   document
     .getElementById(
       'studentModalMsg'
     )
     .innerHTML = '';
 
+
+  // ==========================================
+  // TEMPLATE
+  // ==========================================
   const tplSel =
     document.getElementById(
       'studentTemplate'
     );
+
 
   tplSel.value =
     student
@@ -1684,12 +2125,20 @@ function openStudentModal(student) {
             : ''
         );
 
+
+  // ==========================================
+  // EXTRA FIELDS
+  // ==========================================
   renderExtraFields(
     student
       ? student.extra || {}
       : {}
   );
 
+
+  // ==========================================
+  // TEMPLATE CHANGE
+  // ==========================================
   tplSel.onchange =
     () =>
       renderExtraFields(
@@ -1700,11 +2149,20 @@ function openStudentModal(student) {
           : {}
       );
 
+
+  // ==========================================
+  // SHOW MODAL
+  // ==========================================
   studentModal.classList.add(
     'active'
   );
+
 }
 
+
+// ============================================
+// RENDER EXTRA FIELDS
+// ============================================
 function renderExtraFields(
   existingExtra
 ) {
@@ -1714,21 +2172,32 @@ function renderExtraFields(
       'studentTemplate'
     );
 
+
   const tpl =
     state.templates.find(
       t =>
-        t.id === tplSel.value
+        t.id ===
+        tplSel.value
     );
+
 
   const wrap =
     document.getElementById(
       'extraFieldsList'
     );
 
+
   wrap.innerHTML = '';
 
-  if (!tpl) return;
 
+  if (!tpl) {
+    return;
+  }
+
+
+  // ==========================================
+  // CUSTOM FIELDS ONLY
+  // ==========================================
   const customFields =
     (tpl.fields || [])
       .filter(
@@ -1737,8 +2206,13 @@ function renderExtraFields(
           f.key !== 'student_code'
       );
 
+
+  // ==========================================
+  // NO EXTRA FIELD
+  // ==========================================
   if (
-    customFields.length === 0
+    customFields.length ===
+    0
   ) {
 
     wrap.innerHTML = `
@@ -1755,41 +2229,59 @@ function renderExtraFields(
     return;
   }
 
-  customFields.forEach(f => {
 
-    const row =
-      document.createElement(
-        'div'
+  // ==========================================
+  // CREATE EXTRA INPUTS
+  // ==========================================
+  customFields.forEach(
+    f => {
+
+      const row =
+        document.createElement(
+          'div'
+        );
+
+
+      row.className =
+        'field';
+
+
+      row.innerHTML = `
+
+        <label>
+          ${escapeHtml(
+            f.label ||
+            f.key
+          )}
+        </label>
+
+        <input
+          type="text"
+          data-extra-key="${escapeAttr(
+            f.key
+          )}"
+          value="${escapeAttr(
+            existingExtra[f.key] ||
+            ''
+          )}"
+        >
+
+      `;
+
+
+      wrap.appendChild(
+        row
       );
 
-    row.className =
-      'field';
+    }
+  );
 
-    row.innerHTML = `
-
-      <label>
-        ${escapeHtml(
-          f.label || f.key
-        )}
-      </label>
-
-      <input
-        type="text"
-        data-extra-key="${escapeAttr(
-          f.key
-        )}"
-        value="${escapeAttr(
-          existingExtra[f.key] || ''
-        )}"
-      >
-
-    `;
-
-    wrap.appendChild(row);
-
-  });
 }
 
+
+// ============================================
+// STUDENT FORM SUBMIT
+// ============================================
 document
   .getElementById(
     'studentForm'
@@ -1800,18 +2292,25 @@ document
 
       e.preventDefault();
 
+
       const btn =
         document.getElementById(
           'studentSaveBtn'
         );
+
 
       const msg =
         document.getElementById(
           'studentModalMsg'
         );
 
+
       msg.innerHTML = '';
 
+
+      // ========================================
+      // STUDENT CODE
+      // ========================================
       const student_code =
         document
           .getElementById(
@@ -1820,6 +2319,10 @@ document
           .value
           .trim();
 
+
+      // ========================================
+      // NAME
+      // ========================================
       const name =
         document
           .getElementById(
@@ -1828,6 +2331,10 @@ document
           .value
           .trim();
 
+
+      // ========================================
+      // TEMPLATE
+      // ========================================
       const template_id =
         document
           .getElementById(
@@ -1835,6 +2342,10 @@ document
           )
           .value;
 
+
+      // ========================================
+      // CHECK TEMPLATE
+      // ========================================
       if (!template_id) {
 
         msg.innerHTML = `
@@ -1846,28 +2357,44 @@ document
         return;
       }
 
+
+      // ========================================
+      // EXTRA DATA
+      // ========================================
       const extra = {};
+
 
       document
         .querySelectorAll(
           '#extraFieldsList [data-extra-key]'
         )
-        .forEach(inp => {
+        .forEach(
+          inp => {
 
-          extra[
-            inp.dataset.extraKey
-          ] =
-            inp.value.trim();
+            extra[
+              inp.dataset.extraKey
+            ] =
+              inp.value.trim();
 
-        });
+          }
+        );
 
+
+      // ========================================
+      // DISABLE BUTTON
+      // ========================================
       btn.disabled = true;
+
 
       btn.innerHTML =
         '<span class="spinner"></span> กำลังบันทึก';
 
+
       try {
 
+        // ======================================
+        // UPDATE
+        // ======================================
         if (
           state.editingStudentId
         ) {
@@ -1888,10 +2415,17 @@ document
                 state.editingStudentId
               );
 
-          if (error) throw error;
+
+          if (error) {
+            throw error;
+          }
+
 
         } else {
 
+          // ====================================
+          // INSERT
+          // ====================================
           const {
             error
           } =
@@ -1904,15 +2438,27 @@ document
                 extra
               });
 
-          if (error) throw error;
+
+          if (error) {
+            throw error;
+          }
 
         }
 
+
+        // ======================================
+        // CLOSE MODAL
+        // ======================================
         studentModal.classList.remove(
           'active'
         );
 
+
+        // ======================================
+        // RELOAD STUDENTS
+        // ======================================
         await loadStudents();
+
 
       } catch (err) {
 
@@ -1925,6 +2471,7 @@ document
           </div>
         `;
 
+
       } finally {
 
         btn.disabled = false;
@@ -1936,10 +2483,10 @@ document
 
     }
   );
-
 // ============================================
 // CSV IMPORT
 // ============================================
+
 document
   .getElementById(
     'importCsvBtn'
@@ -1948,12 +2495,16 @@ document
     'click',
     () => {
 
+      // ========================================
+      // ใช้ template ที่เลือกในตัวกรอง
+      // ========================================
       const tplId =
         document
           .getElementById(
             'filterTemplate'
           )
           .value;
+
 
       if (!tplId) {
 
@@ -1965,6 +2516,7 @@ document
         return;
       }
 
+
       document
         .getElementById(
           'csvFileInput'
@@ -1974,6 +2526,10 @@ document
     }
   );
 
+
+// ============================================
+// CSV FILE INPUT
+// ============================================
 document
   .getElementById(
     'csvFileInput'
@@ -1985,7 +2541,11 @@ document
       const file =
         e.target.files[0];
 
-      if (!file) return;
+
+      if (!file) {
+        return;
+      }
+
 
       const tplId =
         document
@@ -1994,7 +2554,12 @@ document
           )
           .value;
 
+
+      // ========================================
+      // READ CSV
+      // ========================================
       let text;
+
 
       try {
 
@@ -2010,6 +2575,7 @@ document
           err
         );
 
+
         alert(
           'อ่านไฟล์ CSV ไม่สำเร็จ:\n' +
           (
@@ -2018,27 +2584,39 @@ document
           )
         );
 
+
         e.target.value = '';
 
         return;
       }
 
+
+      // ========================================
+      // PARSE CSV
+      // ========================================
       const rows =
         parseCsv(text);
 
+
       if (
-        rows.length < 2
+        rows.length <
+        2
       ) {
 
         alert(
           'ไฟล์ CSV ไม่มีข้อมูล'
         );
 
+
         e.target.value = '';
 
         return;
       }
 
+
+      // ========================================
+      // HEADERS
+      // ========================================
       const headers =
         rows[0].map(
           h =>
@@ -2050,15 +2628,21 @@ document
               .trim()
         );
 
+
+      // ========================================
+      // REQUIRED COLUMNS
+      // ========================================
       const codeIdx =
         headers.indexOf(
           'student_code'
         );
 
+
       const nameIdx =
         headers.indexOf(
           'name'
         );
+
 
       if (
         codeIdx === -1 ||
@@ -2069,12 +2653,18 @@ document
           'ไฟล์ CSV ต้องมีคอลัมน์ student_code และ name'
         );
 
+
         e.target.value = '';
 
         return;
       }
 
+
+      // ========================================
+      // CREATE RECORDS
+      // ========================================
       const records = [];
+
 
       for (
         let i = 1;
@@ -2085,24 +2675,33 @@ document
         const row =
           rows[i];
 
+
+        // ข้ามแถวว่าง
         if (
           row.every(
             c =>
               c.trim() === ''
           )
         ) {
+
           continue;
         }
 
+
         const extra = {};
 
+
+        // ======================================
+        // EXTRA COLUMNS
+        // ======================================
         headers.forEach(
           (h, idx) => {
 
             if (
               h !==
                 'student_code' &&
-              h !== 'name'
+              h !==
+                'name'
             ) {
 
               extra[h] =
@@ -2116,6 +2715,10 @@ document
           }
         );
 
+
+        // ======================================
+        // STUDENT RECORD
+        // ======================================
         records.push({
 
           student_code:
@@ -2124,14 +2727,17 @@ document
               ''
             ).trim(),
 
+
           name:
             (
               row[nameIdx] ||
               ''
             ).trim(),
 
+
           template_id:
             tplId,
+
 
           extra
 
@@ -2139,19 +2745,29 @@ document
 
       }
 
+
+      // ========================================
+      // NO RECORD
+      // ========================================
       if (
-        records.length === 0
+        records.length ===
+        0
       ) {
 
         alert(
           'ไม่พบข้อมูลนักเรียนในไฟล์'
         );
 
+
         e.target.value = '';
 
         return;
       }
 
+
+      // ========================================
+      // CONFIRM IMPORT
+      // ========================================
       if (
         !confirm(
           `นำเข้าข้อมูลนักเรียน ${records.length} คน ใช่หรือไม่?`
@@ -2163,14 +2779,22 @@ document
         return;
       }
 
+
+      // ========================================
+      // INSERT
+      // ========================================
       const {
         error
       } =
         await supabaseClient
           .from('students')
-          .insert(records);
+          .insert(
+            records
+          );
+
 
       e.target.value = '';
+
 
       if (error) {
 
@@ -2182,29 +2806,38 @@ document
         return;
       }
 
+
       alert(
         `นำเข้าสำเร็จ ${records.length} คน`
       );
+
 
       await loadStudents();
 
     }
   );
 
+
 // ============================================
 // CSV DECODER
 // ============================================
-async function decodeCsvFile(file) {
+async function decodeCsvFile(
+  file
+) {
 
   const buffer =
     await file.arrayBuffer();
 
-  const bytes =
-    new Uint8Array(buffer);
 
-  // ------------------------------------------
+  const bytes =
+    new Uint8Array(
+      buffer
+    );
+
+
+  // ==========================================
   // UTF-8 BOM
-  // ------------------------------------------
+  // ==========================================
   if (
     bytes.length >= 3 &&
     bytes[0] === 0xEF &&
@@ -2214,14 +2847,18 @@ async function decodeCsvFile(file) {
 
     return new TextDecoder(
       'utf-8'
-    ).decode(bytes);
+    ).decode(
+      bytes
+    );
 
   }
 
-  // ------------------------------------------
+
+  // ==========================================
   // ตรวจ UTF-8
-  // ------------------------------------------
+  // ==========================================
   let isUtf8 = true;
+
 
   try {
 
@@ -2231,8 +2868,12 @@ async function decodeCsvFile(file) {
         {
           fatal: true
         }
-      ).decode(bytes);
+      ).decode(
+        bytes
+      );
 
+
+    // ถ้าเจอภาษาไทย
     if (
       /[\u0E00-\u0E7F]/.test(
         utf8Text
@@ -2249,15 +2890,19 @@ async function decodeCsvFile(file) {
 
   }
 
-  // ------------------------------------------
+
+  // ==========================================
   // Windows-874
-  // ------------------------------------------
+  // ==========================================
   try {
 
     const win874Text =
       new TextDecoder(
         'windows-874'
-      ).decode(bytes);
+      ).decode(
+        bytes
+      );
+
 
     if (
       /[\u0E00-\u0E7F]/.test(
@@ -2279,35 +2924,52 @@ async function decodeCsvFile(file) {
 
   }
 
-  // ------------------------------------------
-  // fallback UTF-8
-  // ------------------------------------------
+
+  // ==========================================
+  // FALLBACK UTF-8
+  // ==========================================
   return new TextDecoder(
     'utf-8'
-  ).decode(bytes);
+  ).decode(
+    bytes
+  );
 
 }
+
 
 // ============================================
 // CSV PARSER
 // ============================================
-function parseCsv(text) {
+function parseCsv(
+  text
+) {
 
   text =
-    String(text || '')
+    String(
+      text || ''
+    )
       .replace(
         /^\uFEFF/,
         ''
       );
 
+
   const rows = [];
+
 
   let row = [];
 
+
   let cell = '';
 
-  let inQuotes = false;
 
+  let inQuotes =
+    false;
+
+
+  // ==========================================
+  // LOOP CHARACTERS
+  // ==========================================
   for (
     let i = 0;
     i < text.length;
@@ -2317,14 +2979,19 @@ function parseCsv(text) {
     const ch =
       text[i];
 
+
     const next =
       text[i + 1];
 
-    // ----------------------------------------
-    // อยู่ในเครื่องหมาย "
-    // ----------------------------------------
-    if (inQuotes) {
 
+    // ========================================
+    // INSIDE QUOTES
+    // ========================================
+    if (
+      inQuotes
+    ) {
+
+      // escaped quote ""
       if (
         ch === '"' &&
         next === '"'
@@ -2334,35 +3001,48 @@ function parseCsv(text) {
 
         i++;
 
-      } else if (
+      }
+
+
+      // closing quote
+      else if (
         ch === '"'
       ) {
 
-        inQuotes = false;
+        inQuotes =
+          false;
 
-      } else {
+      }
+
+
+      // normal character
+      else {
 
         cell += ch;
 
       }
 
+
       continue;
     }
 
-    // ----------------------------------------
-    // เปิดเครื่องหมาย "
-    // ----------------------------------------
+
+    // ========================================
+    // OPEN QUOTE
+    // ========================================
     if (
       ch === '"'
     ) {
 
-      inQuotes = true;
+      inQuotes =
+        true;
 
     }
 
-    // ----------------------------------------
-    // comma
-    // ----------------------------------------
+
+    // ========================================
+    // COMMA
+    // ========================================
     else if (
       ch === ','
     ) {
@@ -2375,9 +3055,10 @@ function parseCsv(text) {
 
     }
 
-    // ----------------------------------------
-    // ขึ้นบรรทัดใหม่
-    // ----------------------------------------
+
+    // ========================================
+    // NEW LINE
+    // ========================================
     else if (
       ch === '\n'
     ) {
@@ -2386,17 +3067,23 @@ function parseCsv(text) {
         cell.trim()
       );
 
-      rows.push(row);
+
+      rows.push(
+        row
+      );
+
 
       row = [];
+
 
       cell = '';
 
     }
 
-    // ----------------------------------------
-    // ข้าม CR
-    // ----------------------------------------
+
+    // ========================================
+    // IGNORE CR
+    // ========================================
     else if (
       ch !== '\r'
     ) {
@@ -2407,9 +3094,10 @@ function parseCsv(text) {
 
   }
 
-  // ------------------------------------------
-  // แถวสุดท้าย
-  // ------------------------------------------
+
+  // ==========================================
+  // LAST ROW
+  // ==========================================
   if (
     cell !== '' ||
     row.length > 0
@@ -2419,34 +3107,50 @@ function parseCsv(text) {
       cell.trim()
     );
 
-    rows.push(row);
+
+    rows.push(
+      row
+    );
 
   }
 
+
   return rows;
+
 }
+
 
 // ============================================
 // UTIL
 // ============================================
-function escapeHtml(str) {
+function escapeHtml(
+  str
+) {
 
   const d =
     document.createElement(
       'div'
     );
 
+
   d.textContent =
     str == null
       ? ''
       : String(str);
 
+
   return d.innerHTML;
+
 }
 
-function escapeAttr(str) {
 
-  return escapeHtml(str)
+function escapeAttr(
+  str
+) {
+
+  return escapeHtml(
+    str
+  )
     .replace(
       /"/g,
       '&quot;'
