@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบจัดการเกียรติบัตร - แอดมิน</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  /* ---------- Login ---------- */
+  #loginScreen{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+  #loginScreen .card{width:100%;max-width:380px;}
+  #loginScreen h1{font-size:24px;margin-bottom:6px;}
+  #loginScreen p{color:var(--ink-soft);font-size:14px;margin:0 0 22px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:13px;color:var(--ink-soft);margin-bottom:5px;}
+
+  /* ---------- App shell ---------- */
+  #app{display:none;min-height:100vh;flex-direction:column;}
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 24px;background:var(--navy);color:#fff;
+  }
+  .topbar h1{color:#fff;font-size:19px;}
+  .topbar .who{font-size:13px;color:#c9d0e0;margin-right:14px;}
+  .topbar button{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.4);padding:7px 16px;font-size:14px;}
+  .topbar button:hover{background:rgba(255,255,255,.12);}
+
+  .tabs{display:flex;gap:2px;background:var(--navy-deep);padding:0 24px;}
+  .tabs button{
+    background:transparent;color:#c9d0e0;padding:12px 18px;font-size:14px;font-weight:600;
+    border-bottom:3px solid transparent;border-radius:0;
+  }
+  .tabs button.active{color:#fff;border-bottom-color:var(--gold);}
+
+  .content{flex:1;padding:26px;max-width:1200px;margin:0 auto;width:100%;}
+  .panel{display:none;}
+  .panel.active{display:block;}
+
+  .panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+  .panel-head h2{font-size:22px;}
+
+  /* Template cards */
+  .tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;}
+  .tpl-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:box-shadow .15s;}
+  .tpl-card:hover{box-shadow:0 3px 14px rgba(22,38,74,.12);}
+  .tpl-card img{width:100%;aspect-ratio:1.4;object-fit:cover;display:block;background:#eee;}
+  .tpl-card .tpl-info{padding:12px 14px;}
+  .tpl-card .tpl-info h3{font-family:'Sarabun';font-size:15px;font-weight:600;color:var(--ink);}
+  .tpl-card .tpl-info p{margin:4px 0 0;font-size:12px;color:var(--ink-soft);}
+
+  /* Editor */
+  #editorPanel{display:none;}
+  .editor-layout{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;}
+  .editor-canvas-wrap{flex:1 1 480px;min-width:280px;}
+  .canvas-holder{position:relative;border:1px solid var(--line);background:#fafafa repeating-conic-gradient(#eee 0% 25%, transparent 0% 50%) 50%/16px 16px;}
+  .canvas-holder img{width:100%;display:block;}
+  .field-marker{
+    position:absolute;transform:translate(-50%,-50%);
+    padding:2px 8px;border-radius:2px;font-size:12px;font-weight:700;
+    background:rgba(184,144,47,.92);color:#fff;cursor:grab;user-select:none;
+    white-space:nowrap;border:1.5px solid #fff;
+  }
+  .field-marker.selected{background:var(--navy);}
+  .field-marker:active{cursor:grabbing;}
+  .upload-drop{
+    border:2px dashed var(--line);border-radius:var(--radius);padding:50px 20px;text-align:center;color:var(--ink-soft);
+  }
+  .editor-side{flex:0 0 320px;min-width:280px;}
+  .field-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+  .field-item{
+    border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px;background:var(--paper);
+    display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-size:14px;
+  }
+  .field-item.selected{border-color:var(--navy);background:#f0f2f7;}
+  .field-item small{display:block;color:var(--ink-soft);font-size:12px;}
+  .field-item .del{color:var(--danger);font-size:18px;line-height:1;background:none;padding:2px 6px;}
+  .field-detail{border:1px solid var(--line);border-radius:var(--radius);padding:16px;background:var(--paper);}
+  .field-detail .field{margin-bottom:10px;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+  /* Students table */
+  table{width:100%;border-collapse:collapse;background:var(--paper);border:1px solid var(--line);}
+  th,td{padding:10px 12px;text-align:left;font-size:14px;border-bottom:1px solid var(--line);}
+  th{background:#f1ede1;font-weight:600;color:var(--navy);}
+  tr:last-child td{border-bottom:none;}
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center;}
+  .toolbar select, .toolbar input{width:auto;min-width:180px;}
+
+  /* Modal */
+  .modal-overlay{
+    display:none;position:fixed;inset:0;background:rgba(13,23,48,.55);
+    align-items:center;justify-content:center;z-index:50;padding:20px;
+  }
+  .modal-overlay.active{display:flex;}
+  .modal-box{background:var(--paper);border-radius:var(--radius);padding:26px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;}
+  .modal-box h3{font-size:19px;margin-bottom:16px;}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;}
+  .extra-row{display:flex;gap:8px;margin-bottom:8px;}
+  .extra-row input{width:auto;flex:1;}
+
+  @media(max-width:640px){
+    .content{padding:16px;}
+    .topbar{padding:12px 16px;}
+    .tabs{padding:0 16px;overflow-x:auto;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div id="loginScreen">
+  <div class="card">
+    <h1>เข้าสู่ระบบแอดมิน</h1>
+    <p>ระบบจัดการเกียรติบัตร</p>
+    <form id="loginForm">
+      <div class="field">
+        <label for="loginEmail">อีเมล</label>
+        <input type="email" id="loginEmail" required autocomplete="username">
+      </div>
+      <div class="field">
+        <label for="loginPassword">รหัสผ่าน</label>
+        <input type="password" id="loginPassword" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn-primary" id="loginBtn" style="width:100%;">เข้าสู่ระบบ</button>
+      <div id="loginMsg"></div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app">
+  <div class="topbar">
+    <h1>ระบบจัดการเกียรติบัตร</h1>
+    <div>
+      <span class="who" id="whoami"></span>
+      <button id="logoutBtn">ออกจากระบบ</button>
+    </div>
+  </div>
+  <div class="tabs">
+    <button data-tab="templates" class="active">เทมเพลตเกียรติบัตร</button>
+    <button data-tab="students">รายชื่อนักเรียน</button>
+  </div>
+
+  <div class="content">
+
+    <!-- ---------- TEMPLATES LIST ---------- -->
+    <div class="panel active" id="panel-templates">
+      <div class="panel-head">
+        <h2>เทมเพลตเกียรติบัตร</h2>
+        <button class="btn-primary" id="newTplBtn">+ สร้างเทมเพลตใหม่</button>
+      </div>
+      <div class="tpl-grid" id="tplGrid"></div>
+      <p id="tplEmpty" class="empty-state hidden">ยังไม่มีเทมเพลต กด "สร้างเทมเพลตใหม่" เพื่อเริ่มต้น</p>
+    </div>
+
+    <!-- ---------- TEMPLATE EDITOR ---------- -->
+    <div class="panel" id="panel-editor">
+      <div class="panel-head">
+        <button class="btn-secondary" id="backToTplBtn">‹ กลับ</button>
+        <button class="btn-primary" id="saveTplBtn">บันทึกเทมเพลต</button>
+      </div>
+      <div class="field" style="max-width:400px;margin-bottom:18px;">
+        <label for="tplName">ชื่อเทมเพลต</label>
+        <input type="text" id="tplName" placeholder="เช่น เกียรติบัตรค่ายวิทยาศาสตร์ 2569">
+      </div>
+
+      <div class="editor-layout">
+        <div class="editor-canvas-wrap">
+          <input type="file" id="bgFileInput" accept="image/*" class="hidden">
+          <div id="uploadDrop" class="upload-drop">
+            <p id="uploadDropText">อัปโหลดรูปพื้นหลังเกียรติบัตร (JPG / PNG)</p>
+            <button type="button" class="btn-secondary" id="chooseBgBtn" style="margin-top:12px;">เลือกไฟล์รูปภาพ</button>
+          </div>
+          <div class="canvas-holder hidden" id="canvasHolder">
+            <img id="bgImage" alt="พื้นหลังเกียรติบัตร">
+          </div>
+          <div id="canvasFooter" class="hidden" style="margin-top:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+            <p style="font-size:13px;color:var(--ink-soft);margin:0;">คลิกที่รูปเพื่อวางช่องข้อความใหม่ ลากป้ายเพื่อจัดตำแหน่ง</p>
+            <button type="button" class="btn-secondary" id="changeBgBtn" style="padding:6px 14px;font-size:13px;">เปลี่ยนรูปพื้นหลัง</button>
+          </div>
+        </div>
+
+        <div class="editor-side">
+          <h3 style="font-size:15px;margin-bottom:10px;">ช่องข้อความ</h3>
+          <div class="field-list" id="fieldList"></div>
+          <button class="btn-secondary" id="addFieldBtn" style="width:100%;margin-bottom:16px;">+ เพิ่มช่องข้อความ</button>
+          <div id="fieldDetail"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------- STUDENTS ---------- -->
+    <div class="panel" id="panel-students">
+      <div class="panel-head">
+        <h2>รายชื่อนักเรียน</h2>
+      </div>
+      <div class="toolbar">
+        <select id="filterTemplate"><option value="">— ทุกเทมเพลต —</option></select>
+        <input type="text" id="studentSearch" placeholder="ค้นหาชื่อ/รหัส">
+        <button class="btn-primary" id="addStudentBtn">+ เพิ่มนักเรียน</button>
+        <button class="btn-secondary" id="importCsvBtn">นำเข้าจาก CSV</button>
+        <input type="file" id="csvFileInput" accept=".csv" class="hidden">
+      </div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead><tr><th>รหัสนักเรียน</th><th>ชื่อ-นามสกุล</th><th>เทมเพลต</th><th></th></tr></thead>
+          <tbody id="studentsTbody"></tbody>
+        </table>
+      </div>
+      <p id="studentsEmpty" class="empty-state hidden">ยังไม่มีรายชื่อนักเรียน</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ MODAL: ADD/EDIT STUDENT ============ -->
+<div class="modal-overlay" id="studentModal">
+  <div class="modal-box">
+    <h3 id="studentModalTitle">เพิ่มนักเรียน</h3>
+    <form id="studentForm">
+      <input type="hidden" id="studentId">
+      <div class="field">
+        <label for="studentCode">รหัสนักเรียน</label>
+        <input type="text" id="studentCode" required>
+      </div>
+      <div class="field">
+        <label for="studentName">ชื่อ-นามสกุล</label>
+        <input type="text" id="studentName" required>
+      </div>
+      <div class="field">
+        <label for="studentTemplate">เทมเพลตเกียรติบัตร</label>
+        <select id="studentTemplate" required></select>
+      </div>
+      <div class="field" id="extraFieldsWrap">
+        <label>ข้อมูลเพิ่มเติม</label>
+        <div id="extraFieldsList"></div>
+      </div>
+      <div id="studentModalMsg"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="studentCancelBtn">ยกเลิก</button>
+        <button type="submit" class="btn-primary" id="studentSaveBtn">บันทึก</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="render.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

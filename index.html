@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ค้นหาเกียรติบัตร</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .wrap{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  header.hero{
+    width:100%;
+    padding:56px 20px 40px;
+    text-align:center;
+  }
+  header.hero h1{
+    font-size:clamp(28px, 5vw, 40px);
+    margin-bottom:10px;
+  }
+  header.hero p{
+    color:var(--ink-soft);
+    font-size:16px;
+    margin:0;
+  }
+  .search-panel{
+    width:100%;
+    max-width:480px;
+    padding:0 20px;
+  }
+  .search-row{
+    display:flex;
+    gap:10px;
+  }
+  .search-row input{
+    flex:1;
+    text-align:center;
+    letter-spacing:.04em;
+    font-size:18px;
+    padding:14px;
+  }
+  .search-row button{
+    padding:14px 22px;
+    white-space:nowrap;
+  }
+  .result-area{
+    width:100%;
+    max-width:920px;
+    padding:36px 20px 80px;
+  }
+  .cert-frame{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px;
+  }
+  .cert-frame canvas{
+    width:100%;
+    height:auto;
+    display:block;
+    border-radius:2px;
+  }
+  .cert-name{
+    text-align:center;
+    margin-top:18px;
+  }
+  .cert-name h2{
+    font-size:24px;
+  }
+  .cert-actions{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    margin-top:22px;
+    flex-wrap:wrap;
+  }
+  .empty-state{
+    text-align:center;
+    color:var(--ink-soft);
+    padding:30px 20px;
+  }
+  footer{
+    padding:24px 20px 40px;
+    text-align:center;
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+  footer a{color:var(--ink-soft);}
+</style>
+</head>
+<body>
+<div class="top-rule"></div>
+<div class="wrap">
+
+  <header class="hero">
+    <h1>ค้นหาเกียรติบัตร</h1>
+    <p>กรอกรหัสนักเรียนเพื่อดูและดาวน์โหลดเกียรติบัตรของคุณ</p>
+  </header>
+
+  <div class="search-panel">
+    <form id="searchForm" class="search-row">
+      <input type="text" id="codeInput" placeholder="กรอกรหัสนักเรียน" autocomplete="off" inputmode="numeric">
+      <button type="submit" class="btn-primary" id="searchBtn">ค้นหา</button>
+    </form>
+    <div id="searchMsg"></div>
+  </div>
+
+  <div class="result-area" id="resultArea"></div>
+
+  <footer>ระบบค้นหาเกียรติบัตรออนไลน์</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="render.js"></script>
+<script>
+const form = document.getElementById('searchForm');
+const input = document.getElementById('codeInput');
+const btn = document.getElementById('searchBtn');
+const msgEl = document.getElementById('searchMsg');
+const resultArea = document.getElementById('resultArea');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const code = input.value.trim();
+  msgEl.innerHTML = '';
+  resultArea.innerHTML = '';
+  if (!code) return;
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> กำลังค้นหา';
+
+  try {
+    const { data: student, error } = await supabaseClient
+      .from('students')
+      .select('*, templates(*)')
+      .eq('student_code', code)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    if (!student) {
+      msgEl.innerHTML = `<div class="msg msg-error">ไม่พบข้อมูลรหัสนักเรียนนี้ กรุณาตรวจสอบรหัสอีกครั้ง</div>`;
+      return;
+    }
+    if (!student.templates) {
+      msgEl.innerHTML = `<div class="msg msg-error">ยังไม่ได้กำหนดเกียรติบัตรสำหรับนักเรียนคนนี้</div>`;
+      return;
+    }
+
+    await renderResult(student);
+
+  } catch (err) {
+    console.error(err);
+    msgEl.innerHTML = `<div class="msg msg-error">เกิดข้อผิดพลาดในการค้นหา ลองใหม่อีกครั้ง</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'ค้นหา';
+  }
+});
+
+async function renderResult(student) {
+  resultArea.innerHTML = `
+    <div class="cert-frame">
+      <canvas id="certCanvas"></canvas>
+    </div>
+    <div class="cert-name">
+      <h2>${escapeHtml(student.name)}</h2>
+    </div>
+    <div class="cert-actions">
+      <button class="btn-primary" id="downloadBtn">ดาวน์โหลดเกียรติบัตร</button>
+    </div>
+  `;
+
+  const img = await loadImage(student.templates.background_url);
+  const canvas = document.getElementById('certCanvas');
+  await drawCertificate(canvas, img, student.templates.fields, student);
+
+  document.getElementById('downloadBtn').addEventListener('click', () => {
+    const link = document.createElement('a');
+    link.download = `เกียรติบัตร-${student.student_code}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  });
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+</script>
+</body>
+</html>
