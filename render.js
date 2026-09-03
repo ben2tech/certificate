@@ -1,30 +1,31 @@
 // ============================================
-// วาดเกียรติบัตรลง Canvas
-// ใช้พิกัด xPct / yPct จากรูปต้นฉบับ
-// รองรับ Desktop / Android / iPhone / iPad
+// render.js
+// วาดเกียรติบัตรจากรูปพื้นหลัง + fields + นักเรียน
+// ใช้พิกัดเดียวกันทุกอุปกรณ์
+// Desktop / Mobile / iPad
 // ============================================
 
-/**
- * ดึงค่าข้อความของ field
- *
- * name          -> student.name
- * student_code  -> student.student_code
- * อื่น ๆ        -> student.extra[key]
- */
+
+// ============================================
+// ดึงค่าข้อความของ Field
+// ============================================
 function resolveFieldValue(field, student) {
 
   if (!student) {
     return field.sample || field.label || '';
   }
 
+  // ชื่อ-นามสกุล
   if (field.key === 'name') {
     return student.name || '';
   }
 
+  // รหัสนักเรียน
   if (field.key === 'student_code') {
     return student.student_code || '';
   }
 
+  // ข้อมูลเพิ่มเติม เช่น cert
   const extra = student.extra || {};
 
   if (
@@ -39,9 +40,9 @@ function resolveFieldValue(field, student) {
 }
 
 
-/**
- * โหลดรูปภาพ
- */
+// ============================================
+// โหลดรูปภาพ
+// ============================================
 function loadImage(url) {
 
   return new Promise((resolve, reject) => {
@@ -50,9 +51,13 @@ function loadImage(url) {
 
     img.crossOrigin = 'anonymous';
 
-    img.onload = () => resolve(img);
+    img.onload = () => {
+      resolve(img);
+    };
 
-    img.onerror = (err) => reject(err);
+    img.onerror = (error) => {
+      reject(error);
+    };
 
     img.src = url;
 
@@ -61,36 +66,44 @@ function loadImage(url) {
 }
 
 
-/**
- * รอฟอนต์ Sarabun ให้โหลดเสร็จก่อน
- */
+// ============================================
+// รอฟอนต์ให้พร้อมก่อนวาด
+// ============================================
 async function waitForFonts() {
 
   try {
 
-    if (document.fonts) {
-
-      await document.fonts.load(
-        '400 40px "Sarabun"'
-      );
-
-      await document.fonts.load(
-        '600 40px "Sarabun"'
-      );
-
-      await document.fonts.load(
-        '700 40px "Sarabun"'
-      );
-
-      await document.fonts.ready;
-
+    if (!document.fonts) {
+      return;
     }
 
-  } catch (err) {
+    await Promise.all([
+
+      document.fonts.load(
+        '400 40px "Sarabun"'
+      ),
+
+      document.fonts.load(
+        '500 40px "Sarabun"'
+      ),
+
+      document.fonts.load(
+        '600 40px "Sarabun"'
+      ),
+
+      document.fonts.load(
+        '700 40px "Sarabun"'
+      )
+
+    ]);
+
+    await document.fonts.ready;
+
+  } catch (error) {
 
     console.warn(
-      'ไม่สามารถโหลดฟอนต์ได้:',
-      err
+      'โหลดฟอนต์ Sarabun ไม่สำเร็จ',
+      error
     );
 
   }
@@ -98,20 +111,9 @@ async function waitForFonts() {
 }
 
 
-/**
- * วาดเกียรติบัตร
- *
- * Canvas จะมีขนาดเท่ากับรูปต้นฉบับจริง
- * แล้วใช้ xPct / yPct คำนวณตำแหน่ง
- *
- * ดังนั้นไม่ว่าจะเปิดบน
- * - คอมพิวเตอร์
- * - Android
- * - iPhone
- * - iPad
- *
- * ตำแหน่งข้อความบนใบเกียรติบัตรจะใช้พิกัดเดียวกัน
- */
+// ============================================
+// วาดเกียรติบัตร
+// ============================================
 async function drawCertificate(
   canvas,
   img,
@@ -120,22 +122,25 @@ async function drawCertificate(
 ) {
 
   if (!canvas) {
+
     throw new Error(
       'ไม่พบ Canvas'
     );
+
   }
 
   if (!img) {
+
     throw new Error(
       'ไม่พบรูปพื้นหลัง'
     );
+
   }
 
 
   // ==========================================
-  // 1. ใช้ขนาดจริงของรูป
+  // ใช้ขนาดจริงของรูป
   // ==========================================
-
   const w =
     img.naturalWidth ||
     img.width;
@@ -143,6 +148,7 @@ async function drawCertificate(
   const h =
     img.naturalHeight ||
     img.height;
+
 
   if (!w || !h) {
 
@@ -154,22 +160,39 @@ async function drawCertificate(
 
 
   // ==========================================
-  // 2. ตั้ง Canvas เป็นขนาดจริง
+  // Canvas ใช้ขนาดจริงของรูป
   // ==========================================
-
   canvas.width = w;
 
   canvas.height = h;
 
 
   // ==========================================
-  // 3. ไม่ใช้ CSS size มาคำนวณตำแหน่ง
+  // CSS มีหน้าที่แค่ย่อ/ขยาย Canvas
+  // ไม่เอาขนาดหน้าจอมาคำนวณตำแหน่ง
   // ==========================================
+  canvas.style.display = 'block';
 
+  canvas.style.width = '100%';
+
+  canvas.style.height = 'auto';
+
+  canvas.style.maxWidth = '100%';
+
+  canvas.style.transform = 'none';
+
+
+  // ==========================================
+  // Canvas Context
+  // ==========================================
   const ctx =
     canvas.getContext(
-      '2d'
+      '2d',
+      {
+        alpha: false
+      }
     );
+
 
   if (!ctx) {
 
@@ -181,9 +204,8 @@ async function drawCertificate(
 
 
   // ==========================================
-  // 4. ล้าง Canvas
+  // ล้าง Canvas
   // ==========================================
-
   ctx.clearRect(
     0,
     0,
@@ -193,9 +215,8 @@ async function drawCertificate(
 
 
   // ==========================================
-  // 5. วาดพื้นหลัง
+  // วาดพื้นหลัง
   // ==========================================
-
   ctx.drawImage(
     img,
     0,
@@ -206,186 +227,131 @@ async function drawCertificate(
 
 
   // ==========================================
-  // 6. โหลดฟอนต์ก่อนวาด
+  // รอฟอนต์
   // ==========================================
-
   await waitForFonts();
 
 
   // ==========================================
-  // 7. วาดข้อความ
+  // วาดข้อมูลทั้งหมด
   // ==========================================
+  (fields || []).forEach(field => {
 
-  (fields || []).forEach(
-    field => {
-
-      const text =
-        resolveFieldValue(
-          field,
-          student
-        );
-
-      if (!text) {
-        return;
-      }
-
-
-      // ----------------------------------------
-      // คำนวณตำแหน่งจากเปอร์เซ็นต์
-      // ----------------------------------------
-
-      const xPct =
-        Number(field.xPct) || 0;
-
-      const yPct =
-        Number(field.yPct) || 0;
-
-      const x =
-        xPct * w;
-
-      const y =
-        yPct * h;
-
-
-      // ----------------------------------------
-      // ขนาดตัวอักษร
-      // ----------------------------------------
-
-      const fontSize =
-        Number(field.fontSize) || 32;
-
-
-      // ----------------------------------------
-      // น้ำหนักตัวอักษร
-      // ----------------------------------------
-
-      const fontWeight =
-        Number(field.fontWeight) || 600;
-
-
-      // ----------------------------------------
-      // ฟอนต์
-      // ----------------------------------------
-
-      const fontFamily =
-        field.fontFamily ||
-        'Sarabun';
-
-
-      // ----------------------------------------
-      // สี
-      // ----------------------------------------
-
-      const color =
-        field.color ||
-        '#16264a';
-
-
-      // ----------------------------------------
-      // การจัดข้อความ
-      // ----------------------------------------
-
-      const align =
-        field.align ||
-        'center';
-
-
-      // ========================================
-      // ตั้งค่าการวาด
-      // ========================================
-
-      ctx.save();
-
-
-      ctx.font =
-        `${fontWeight} ${fontSize}px "${fontFamily}", sans-serif`;
-
-      ctx.fillStyle =
-        color;
-
-      ctx.textAlign =
-        align;
-
-      /*
-       * ใช้ middle เหมือนตัว editor
-       * ทำให้จุด x/y เป็นจุดกึ่งกลางของข้อความ
-       */
-      ctx.textBaseline =
-        'middle';
-
-
-      // ========================================
-      // วาดข้อความ
-      // ========================================
-
-      ctx.fillText(
-        text,
-        x,
-        y
+    const text =
+      resolveFieldValue(
+        field,
+        student
       );
 
 
-      ctx.restore();
-
+    if (!text) {
+      return;
     }
-  );
-
-}
 
 
-/**
- * ============================================
- * ทำให้ Canvas แสดงผลแบบ Responsive
- * ============================================
- *
- * สำคัญ:
- * ห้ามเปลี่ยน canvas.width / canvas.height
- * ตามขนาดหน้าจอ
- *
- * ให้ CSS เป็นตัวปรับขนาดการแสดงผลแทน
- */
-function setupResponsiveCanvas(canvas) {
+    // ========================================
+    // พิกัดเป็น % ของรูปต้นฉบับ
+    // ========================================
+    const xPct =
+      Number(field.xPct) || 0;
 
-  if (!canvas) {
-    return;
-  }
-
-  canvas.style.display =
-    'block';
-
-  canvas.style.width =
-    '100%';
-
-  canvas.style.height =
-    'auto';
-
-  canvas.style.maxWidth =
-    '100%';
-
-}
+    const yPct =
+      Number(field.yPct) || 0;
 
 
-/**
- * ============================================
- * วาดแล้วตั้ง Responsive อัตโนมัติ
- * ============================================
- */
-async function drawCertificateResponsive(
-  canvas,
-  img,
-  fields,
-  student
-) {
+    const x =
+      xPct * w;
 
-  await drawCertificate(
-    canvas,
-    img,
-    fields,
-    student
-  );
+    const y =
+      yPct * h;
 
-  setupResponsiveCanvas(
-    canvas
-  );
+
+    // ========================================
+    // คุณสมบัติ Font
+    // ========================================
+    const fontSize =
+      Number(field.fontSize) || 32;
+
+    const fontWeight =
+      Number(field.fontWeight) || 600;
+
+    const fontFamily =
+      field.fontFamily ||
+      'Sarabun';
+
+    const color =
+      field.color ||
+      '#16264a';
+
+    const align =
+      field.align ||
+      'center';
+
+
+    // ========================================
+    // Save Canvas State
+    // ========================================
+    ctx.save();
+
+
+    // ========================================
+    // Font
+    // ========================================
+    ctx.font =
+      `${fontWeight} ${fontSize}px "${fontFamily}", sans-serif`;
+
+
+    // ========================================
+    // สี
+    // ========================================
+    ctx.fillStyle =
+      color;
+
+
+    // ========================================
+    // จัดแนวนอน
+    // ========================================
+    ctx.textAlign =
+      align;
+
+
+    // ========================================
+    // สำคัญมาก
+    //
+    // จุด x/y เป็นจุดกึ่งกลางแนวตั้ง
+    // ========================================
+    ctx.textBaseline =
+      'middle';
+
+
+    // ========================================
+    // ป้องกันการเปลี่ยนค่าโดย browser
+    // ========================================
+    ctx.direction =
+      'ltr';
+
+
+    // ========================================
+    // วาดข้อความ
+    // ========================================
+    ctx.fillText(
+      text,
+      x,
+      y
+    );
+
+
+    // ========================================
+    // Restore
+    // ========================================
+    ctx.restore();
+
+  });
+
+
+  // ==========================================
+  // คืน Canvas
+  // ==========================================
+  return canvas;
 
 }
