@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Chonburi&family=Sarabun:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Chonburi&family=Sarabun:wght@400;500;600;700&display=block');
 
 :root{
   --navy: #16264a;
@@ -14,975 +14,109 @@
   --radius: 4px;
 }
 
-
-/* ============================================
-   RESET
-============================================ */
-
-*{
-  box-sizing:border-box;
-}
-
-html{
-  width:100%;
-  min-height:100%;
-
-  -webkit-text-size-adjust:100%;
-  text-size-adjust:100%;
-}
-
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
 body{
   margin:0;
-
-  width:100%;
-  min-height:100vh;
-
   background:var(--cream);
-
   color:var(--ink);
-
   font-family:'Sarabun', sans-serif;
-
   font-size:16px;
-
   line-height:1.6;
-
-  -webkit-text-size-adjust:100%;
-  text-size-adjust:100%;
 }
 
-
-/* ============================================
-   HEADINGS
-============================================ */
-
-h1,
-h2,
-h3{
-  font-family:
-    'Chonburi',
-    'Sarabun',
-    sans-serif;
-
+h1,h2,h3{
+  font-family:'Chonburi', 'Sarabun', sans-serif;
   color:var(--navy);
-
   font-weight:400;
-
   margin:0;
 }
 
-a{
-  color:var(--navy);
-}
-
-
-/* ============================================
-   BUTTON
-============================================ */
+a{color:var(--navy);}
 
 button{
   font-family:inherit;
-
   cursor:pointer;
-
   border:none;
-
   border-radius:var(--radius);
-
   font-size:15px;
-
-  -webkit-appearance:none;
-  appearance:none;
 }
-
-button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible{
-
-  outline:
-    2px solid var(--gold);
-
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible{
+  outline:2px solid var(--gold);
   outline-offset:2px;
 }
 
-
-/* ============================================
-   PRIMARY
-============================================ */
-
 .btn-primary{
-
   background:var(--navy);
-
   color:var(--cream);
-
   padding:12px 28px;
-
   font-weight:600;
-
   letter-spacing:.02em;
-
-  transition:
-    background .15s ease;
+  transition:background .15s ease;
 }
-
-.btn-primary:hover{
-  background:var(--navy-deep);
-}
-
-.btn-primary:disabled{
-  background:#9aa0ad;
-
-  cursor:not-allowed;
-}
-
-
-/* ============================================
-   SECONDARY
-============================================ */
+.btn-primary:hover{background:var(--navy-deep);}
+.btn-primary:disabled{background:#9aa0ad;cursor:not-allowed;}
 
 .btn-secondary{
-
   background:transparent;
-
   color:var(--navy);
-
-  border:
-    1px solid var(--navy);
-
+  border:1px solid var(--navy);
   padding:10px 22px;
-
   font-weight:600;
 }
-
-.btn-secondary:hover{
-  background:
-    rgba(22,38,74,.06);
-}
-
-
-/* ============================================
-   DANGER
-============================================ */
+.btn-secondary:hover{background:rgba(22,38,74,.06);}
 
 .btn-danger{
-
   background:transparent;
-
   color:var(--danger);
-
-  border:
-    1px solid var(--danger);
-
+  border:1px solid var(--danger);
   padding:8px 16px;
-
   font-weight:600;
-
   font-size:14px;
 }
+.btn-danger:hover{background:rgba(161,58,58,.08);}
 
-.btn-danger:hover{
-  background:
-    rgba(161,58,58,.08);
-}
-
-
-/* ============================================
-   INPUT
-============================================ */
-
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="number"],
-select,
-textarea{
-
+input[type="text"], input[type="email"], input[type="password"], input[type="number"], select, textarea{
   font-family:inherit;
-
   font-size:15px;
-
   padding:10px 12px;
-
-  border:
-    1px solid var(--line);
-
-  border-radius:
-    var(--radius);
-
-  background:
-    var(--paper);
-
-  color:
-    var(--ink);
-
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--paper);
+  color:var(--ink);
   width:100%;
-
-  -webkit-appearance:none;
-  appearance:none;
 }
-
-
-/* ============================================
-   TOP RULE
-============================================ */
 
 .top-rule{
-
   height:4px;
-
-  background:
-    linear-gradient(
-      90deg,
-      var(--navy) 0%,
-      var(--gold) 50%,
-      var(--navy) 100%
-    );
+  background:linear-gradient(90deg, var(--navy) 0%, var(--gold) 50%, var(--navy) 100%);
 }
 
-
-/* ============================================
-   CARD
-============================================ */
-
 .card{
-
-  background:
-    var(--paper);
-
-  border:
-    1px solid var(--line);
-
-  border-radius:
-    var(--radius);
-
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
   padding:28px;
 }
 
-
-/* ============================================
-   HIDDEN
-============================================ */
-
-.hidden{
-  display:none !important;
-}
-
-
-/* ============================================
-   SPINNER
-============================================ */
+.hidden{display:none !important;}
 
 .spinner{
-
-  width:18px;
-
-  height:18px;
-
-  border:
-    2px solid
-    rgba(255,255,255,.4);
-
+  width:18px;height:18px;
+  border:2px solid rgba(255,255,255,.4);
   border-top-color:#fff;
-
   border-radius:50%;
-
   display:inline-block;
-
-  animation:
-    spin .7s linear infinite;
-
+  animation:spin .7s linear infinite;
   vertical-align:-3px;
 }
-
-@keyframes spin{
-
-  to{
-    transform:rotate(360deg);
-  }
-
-}
-
-
-/* ============================================
-   MESSAGE
-============================================ */
+@keyframes spin{to{transform:rotate(360deg);}}
 
 .msg{
-
   padding:12px 16px;
-
-  border-radius:
-    var(--radius);
-
+  border-radius:var(--radius);
   font-size:14px;
-
   margin-top:12px;
 }
-
-.msg-error{
-
-  background:#fbeaea;
-
-  color:var(--danger);
-
-  border:
-    1px solid #e6c4c4;
-}
-
-.msg-success{
-
-  background:#eaf2ea;
-
-  color:#2f6b3f;
-
-  border:
-    1px solid #c6dccb;
-}
-
-
-/* =================================================
-   SEARCH PAGE
-================================================= */
-
-.wrap{
-
-  width:100%;
-
-  min-height:100vh;
-
-  display:flex;
-
-  flex-direction:column;
-
-  align-items:center;
-}
-
-
-/* ============================================
-   HERO
-============================================ */
-
-header.hero{
-
-  width:100%;
-
-  padding:
-    64px
-    20px
-    36px;
-
-  text-align:center;
-}
-
-header.hero img.logo{
-
-  width:110px;
-
-  height:110px;
-
-  object-fit:contain;
-
-  margin-bottom:22px;
-
-  filter:
-    drop-shadow(
-      0 6px 18px
-      rgba(0,0,0,.35)
-    );
-}
-
-header.hero h1{
-
-  font-family:
-    'Sarabun',
-    sans-serif;
-
-  font-weight:700;
-
-  color:#fff;
-
-  font-size:
-    clamp(
-      24px,
-      4.5vw,
-      34px
-    );
-
-  margin-bottom:10px;
-
-  letter-spacing:.01em;
-}
-
-header.hero p{
-
-  color:#b9d3d6;
-
-  font-size:15px;
-
-  margin:0;
-}
-
-
-/* ============================================
-   SEARCH
-============================================ */
-
-.search-panel{
-
-  width:100%;
-
-  max-width:560px;
-
-  padding:
-    0 20px;
-}
-
-.search-pill{
-
-  background:#fff;
-
-  border-radius:999px;
-
-  padding:
-    6px
-    6px
-    6px
-    22px;
-
-  display:flex;
-
-  align-items:center;
-
-  gap:10px;
-
-  box-shadow:
-    0 12px 30px
-    rgba(0,0,0,.25);
-}
-
-.search-pill svg{
-
-  flex:
-    0 0 auto;
-
-  color:#7d8a9a;
-}
-
-.search-pill input{
-
-  flex:1;
-
-  min-width:0;
-
-  border:none;
-
-  padding:
-    14px 4px;
-
-  font-size:16px;
-
-  background:transparent;
-}
-
-.search-pill input:focus-visible{
-  outline:none;
-}
-
-.search-pill button{
-
-  flex:
-    0 0 auto;
-
-  background:#2b6fb3;
-
-  color:#fff;
-
-  padding:
-    13px 28px;
-
-  border-radius:999px;
-
-  font-weight:600;
-
-  font-size:15px;
-
-  display:flex;
-
-  align-items:center;
-
-  gap:8px;
-
-  transition:
-    background .15s ease;
-}
-
-.search-pill button:hover{
-  background:#245c96;
-}
-
-.search-pill button:disabled{
-  background:#8ea6bc;
-
-  cursor:not-allowed;
-}
-
-
-/* ============================================
-   SEARCH MESSAGE
-============================================ */
-
-#searchMsg .msg{
-  background:
-    rgba(255,255,255,.94);
-}
-
-
-/* =================================================
-   RESULT
-================================================= */
-
-.result-area{
-
-  width:100%;
-
-  max-width:920px;
-
-  padding:
-    36px 20px 80px;
-
-  /*
-   * ป้องกัน flex/grid
-   * บังคับให้ลูกหดเกินขนาดไม่ได้
-   */
-  min-width:0;
-}
-
-
-/* =================================================
-   CERTIFICATE FRAME
-================================================= */
-
-.cert-frame{
-
-  width:100%;
-
-  max-width:100%;
-
-  background:
-    var(--paper);
-
-  border-radius:10px;
-
-  padding:16px;
-
-  box-shadow:
-    0 16px 40px
-    rgba(0,0,0,.3);
-
-  /*
-   * สำคัญ
-   * ไม่ให้ Canvas ล้นกรอบ
-   */
-  overflow:hidden;
-
-  /*
-   * ป้องกัน flex item
-   * ขยายเกินพื้นที่
-   */
-  min-width:0;
-}
-
-
-/* =================================================
-   CANVAS
-================================================= */
-
-/*
- * จุดสำคัญที่สุด
- *
- * Canvas มีขนาดจริง เช่น
- *
- * 2480 × 1754
- *
- * JavaScript เป็นคนกำหนด
- * canvas.width / canvas.height
- *
- * CSS มีหน้าที่เพียง
- * ย่อ Canvas ให้พอดีกับหน้าจอ
- *
- * ดังนั้นตำแหน่งข้อความ
- * จะไม่เปลี่ยนตามอุปกรณ์
- */
-
-.cert-frame canvas,
-#certCanvas{
-
-  display:block;
-
-  width:100%;
-
-  height:auto;
-
-  max-width:100%;
-
-  min-width:0;
-
-  /*
-   * ห้ามใช้ transform
-   */
-  transform:none !important;
-
-  /*
-   * ห้ามให้ object-fit เปลี่ยนสัดส่วน
-   */
-  object-fit:contain;
-
-  /*
-   * ป้องกันการลากรูป
-   */
-  -webkit-user-drag:none;
-
-  user-select:none;
-
-  -webkit-user-select:none;
-}
-
-
-/* =================================================
-   iOS / iPad
-================================================= */
-
-@supports (-webkit-touch-callout:none){
-
-  .cert-frame{
-
-    width:100%;
-
-    max-width:100%;
-
-    overflow:hidden;
-
-  }
-
-  .cert-frame canvas,
-  #certCanvas{
-
-    display:block;
-
-    width:100%;
-
-    height:auto;
-
-    max-width:100%;
-
-    min-width:0;
-
-    transform:none !important;
-
-  }
-
-}
-
-
-/* =================================================
-   CERTIFICATE NAME
-================================================= */
-
-.cert-name{
-
-  text-align:center;
-
-  margin-top:18px;
-}
-
-.cert-name h2{
-
-  font-size:24px;
-
-  color:#fff;
-
-  -webkit-text-size-adjust:100%;
-
-  text-size-adjust:100%;
-}
-
-
-/* =================================================
-   CERTIFICATE BUTTON
-================================================= */
-
-.cert-actions{
-
-  display:flex;
-
-  justify-content:center;
-
-  gap:12px;
-
-  margin-top:22px;
-
-  flex-wrap:wrap;
-}
-
-.cert-actions .btn-primary{
-
-  background:#2b6fb3;
-}
-
-.cert-actions .btn-primary:hover{
-
-  background:#245c96;
-}
-
-
-/* =================================================
-   EMPTY
-================================================= */
-
-.empty-state{
-
-  text-align:center;
-
-  color:#b9d3d6;
-
-  padding:
-    30px 20px;
-}
-
-
-/* =================================================
-   FOOTER
-================================================= */
-
-footer{
-
-  padding:
-    24px 20px 44px;
-
-  text-align:center;
-
-  font-size:13px;
-
-  color:#7fa1a6;
-}
-
-
-/* =================================================
-   TABLET / iPAD
-================================================= */
-
-@media (max-width:1024px){
-
-  .result-area{
-
-    max-width:920px;
-
-    padding:
-      28px 16px 60px;
-  }
-
-  .cert-frame{
-
-    padding:12px;
-
-    border-radius:8px;
-  }
-
-}
-
-
-/* =================================================
-   MOBILE
-================================================= */
-
-@media (max-width:600px){
-
-  header.hero{
-
-    padding:
-      42px 16px 28px;
-  }
-
-  header.hero img.logo{
-
-    width:85px;
-
-    height:85px;
-
-    margin-bottom:16px;
-  }
-
-  header.hero h1{
-
-    font-size:26px;
-  }
-
-  header.hero p{
-
-    font-size:14px;
-  }
-
-
-  .search-panel{
-
-    padding:
-      0 12px;
-  }
-
-  .search-pill{
-
-    padding-left:16px;
-
-    gap:6px;
-  }
-
-  .search-pill input{
-
-    min-width:0;
-
-    font-size:16px;
-
-    padding:
-      12px 2px;
-  }
-
-  .search-pill button{
-
-    padding:
-      12px 18px;
-
-    font-size:14px;
-  }
-
-
-  .result-area{
-
-    padding:
-      24px 10px 50px;
-  }
-
-
-  .cert-frame{
-
-    padding:6px;
-
-    border-radius:7px;
-  }
-
-
-  .cert-name h2{
-
-    font-size:20px;
-  }
-
-
-  .cert-actions{
-
-    gap:8px;
-
-    margin-top:16px;
-  }
-
-  .cert-actions button{
-
-    width:100%;
-  }
-
-}
-
-
-/* =================================================
-   TOUCH DEVICE
-================================================= */
-
-@media (pointer:coarse){
-
-  html,
-  body{
-
-    -webkit-text-size-adjust:100%;
-
-    text-size-adjust:100%;
-  }
-
-
-  .cert-frame{
-
-    width:100%;
-
-    max-width:100%;
-
-    overflow:hidden;
-  }
-
-
-  .cert-frame canvas,
-  #certCanvas{
-
-    width:100%;
-
-    height:auto;
-
-    max-width:100%;
-
-    min-width:0;
-
-    display:block;
-
-    transform:none !important;
-  }
-
-}
-
-
-/* =================================================
-   iPAD LANDSCAPE
-================================================= */
-
-@media
-  (min-width:768px)
-  and (max-width:1024px){
-
-  .result-area{
-
-    max-width:920px;
-
-    padding:
-      28px 20px 60px;
-  }
-
-  .cert-frame{
-
-    width:100%;
-
-    padding:12px;
-  }
-
-}
-
-
-/* =================================================
-   SAFE AREA
-================================================= */
-
-@supports (padding:max(0px)){
-
-  .result-area{
-
-    padding-left:
-      max(
-        10px,
-        env(safe-area-inset-left)
-      );
-
-    padding-right:
-      max(
-        10px,
-        env(safe-area-inset-right)
-      );
-
-  }
-
-}
+.msg-error{background:#fbeaea;color:var(--danger);border:1px solid #e6c4c4;}
+.msg-success{background:#eaf2ea;color:#2f6b3f;border:1px solid #c6dccb;}
