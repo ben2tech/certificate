@@ -653,7 +653,7 @@ document.getElementById('csvFileInput').addEventListener('change', async (e) => 
   const file = e.target.files[0];
   if (!file) return;
   const tplId = document.getElementById('filterTemplate').value;
-  const text = await file.text();
+  const text = await readCsvFileSmart(file);
   const rows = parseCsv(text);
   if (rows.length < 2) { alert('ไฟล์ CSV ไม่มีข้อมูล'); return; }
 
@@ -690,6 +690,29 @@ document.getElementById('csvFileInput').addEventListener('change', async (e) => 
   alert(`นำเข้าสำเร็จ ${records.length} คน`);
   await loadStudents();
 });
+
+/**
+ * อ่านไฟล์ CSV โดยตรวจจับ encoding อัตโนมัติ
+ * รองรับทั้งไฟล์ UTF-8 ปกติ และไฟล์จาก Excel ภาษาไทยที่เซฟเป็น ANSI/TIS-620
+ * (สาเหตุที่ทำให้ชื่ออ่านไม่ได้เวลานำเข้า CSV)
+ */
+async function readCsvFileSmart(file) {
+  const buffer = await file.arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+
+  // ตัด BOM ของ UTF-8 ถ้ามี
+  if (bytes.length >= 3 && bytes[0] === 0xEF && bytes[1] === 0xBB && bytes[2] === 0xBF) {
+    return new TextDecoder('utf-8').decode(bytes.slice(3));
+  }
+
+  // ลองอ่านแบบ UTF-8 เข้มงวดก่อน ถ้าไบต์ไม่ตรงรูปแบบ UTF-8 จะโยน error ออกมา
+  try {
+    return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+  } catch (e) {
+    // ไม่ใช่ UTF-8 ที่ถูกต้อง -> เป็นไฟล์จาก Excel ภาษาไทยแบบเก่า ให้อ่านด้วย windows-874 แทน
+    return new TextDecoder('windows-874').decode(bytes);
+  }
+}
 
 function parseCsv(text) {
   return text.split(/\r?\n/).map(line => line.split(',').map(c => c.trim()));
