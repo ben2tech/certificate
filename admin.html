@@ -65,12 +65,21 @@
   .canvas-holder img{width:100%;display:block;}
   .field-marker{
     position:absolute;transform:translate(-50%,-50%);
-    padding:2px 8px;border-radius:2px;font-size:12px;font-weight:700;
-    background:rgba(184,144,47,.92);color:#fff;cursor:grab;user-select:none;
-    white-space:nowrap;border:1.5px solid #fff;
+    width:20px;height:20px;border-radius:50%;
+    background:rgba(184,144,47,.92);border:2px solid #fff;
+    cursor:grab;touch-action:none;box-shadow:0 1px 4px rgba(0,0,0,.35);
+    z-index:5;
   }
-  .field-marker.selected{background:var(--navy);}
+  .field-marker.selected{background:rgba(22,38,74,.92);}
   .field-marker:active{cursor:grabbing;}
+  .field-marker .tag{
+    position:absolute;left:50%;top:0;
+    transform:translate(-50%,calc(-100% - 10px));
+    padding:2px 9px;border-radius:2px;font-size:11px;font-weight:700;
+    background:rgba(184,144,47,.95);color:#fff;
+    white-space:nowrap;pointer-events:none;
+  }
+  .field-marker.selected .tag{background:rgba(22,38,74,.95);}
   .upload-drop{
     border:2px dashed var(--line);border-radius:var(--radius);padding:50px 20px;text-align:center;color:var(--ink-soft);
   }
