@@ -542,8 +542,13 @@ document.getElementById('deleteAllBtn').addEventListener('click', async () => {
 
   try {
     const ids = rows.map(r => r.id);
-    const { error } = await supabaseClient.from('students').delete().in('id', ids);
-    if (error) throw error;
+    const chunkSize = 50;
+    for (let i = 0; i < ids.length; i += chunkSize) {
+      const chunk = ids.slice(i, i + chunkSize);
+      const { error } = await supabaseClient.from('students').delete().in('id', chunk);
+      if (error) throw error;
+      btn.innerHTML = `<span class="spinner"></span> กำลังลบ (${Math.min(i + chunkSize, ids.length)}/${ids.length})`;
+    }
     await loadStudents();
   } catch (err) {
     alert('ลบไม่สำเร็จ: ' + err.message);
