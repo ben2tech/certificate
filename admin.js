@@ -259,7 +259,7 @@ function renderFieldMarkers() {
     marker.className = 'field-marker' + (field.id === state.selectedFieldId ? ' selected' : '');
     marker.style.left = (field.xPct * 100) + '%';
     marker.style.top = (field.yPct * 100) + '%';
-    marker.textContent = field.label || field.key;
+    marker.innerHTML = `<span class="tag">${escapeHtml(field.label || field.key)}</span>`;
     marker.dataset.fieldId = field.id;
     marker.addEventListener('click', (ev) => {
       ev.stopPropagation();
