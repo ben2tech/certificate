@@ -175,6 +175,10 @@ function openEditor(tpl) {
   document.getElementById('panel-editor').classList.add('active');
 }
 
+document.getElementById('bgImage').addEventListener('load', renderPreview);
+
+document.getElementById('togglePreview').addEventListener('change', renderPreview);
+
 // --- upload background ---
 document.getElementById('chooseBgBtn').addEventListener('click', () => {
   document.getElementById('bgFileInput').click();
@@ -267,6 +271,26 @@ function renderFieldMarkers() {
     enableDrag(marker, holder, field);
     holder.appendChild(marker);
   });
+  renderPreview();
+}
+
+// --- พรีวิวข้อความจริงบน canvas (ใช้เอนจิน render เดียวกับที่นักเรียนจะเห็นจริงบนอุปกรณ์นี้) ---
+async function renderPreview() {
+  const checkbox = document.getElementById('togglePreview');
+  const canvas = document.getElementById('previewCanvas');
+  if (!canvas) return;
+  if (!checkbox || !checkbox.checked) {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    return;
+  }
+  const img = document.getElementById('bgImage');
+  if (!img.src || !img.naturalWidth) return;
+  try {
+    await drawCertificate(canvas, img, state.currentTemplate.fields, null);
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 function enableDrag(marker, holder, field) {
@@ -287,6 +311,7 @@ function enableDrag(marker, holder, field) {
     const up = () => {
       marker.removeEventListener('pointermove', move);
       marker.removeEventListener('pointerup', up);
+      renderPreview();
     };
     marker.addEventListener('pointermove', move);
     marker.addEventListener('pointerup', up);
