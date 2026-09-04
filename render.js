@@ -93,8 +93,16 @@ async function drawCertificate(canvas, img, fields, student) {
 
     ctx.font = `${fontWeight} ${fontSize}px "${fontFamily}", "Sarabun", sans-serif`;
     ctx.fillStyle = color;
-    ctx.textAlign = align;
     ctx.textBaseline = 'middle';
-    ctx.fillText(text, x, y);
+
+    // คำนวณตำแหน่ง x เอง แทนการพึ่ง ctx.textAlign ของเบราว์เซอร์
+    // เพราะ Safari/iOS กับ Chrome ตีความ textAlign ต่างกันในบางกรณี
+    ctx.textAlign = 'left';
+    const textWidth = ctx.measureText(text).width;
+    let drawX = x;
+    if (align === 'center') drawX = x - textWidth / 2;
+    else if (align === 'right') drawX = x - textWidth;
+
+    ctx.fillText(text, drawX, y);
   });
 }
