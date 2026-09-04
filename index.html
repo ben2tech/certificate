@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=block" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=2">
+<link rel="stylesheet" href="styles.css?v=3">
 <style>
   body{
     background: linear-gradient(160deg, #0f2b30 0%, #163b42 45%, #1f545c 100%);
@@ -126,6 +126,51 @@
     color:#b9d3d6;
     padding:30px 20px;
   }
+  .cert-list-wrap{
+    background:var(--paper);
+    border-radius:10px;
+    padding:24px;
+    box-shadow:0 16px 40px rgba(0,0,0,.3);
+  }
+  .cert-list-title{
+    font-size:17px;
+    color:var(--navy);
+    margin-bottom:16px;
+    text-align:center;
+  }
+  .cert-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .cert-list-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    width:100%;
+    text-align:left;
+    background:#f7f3ea;
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:14px 18px;
+    font-family:'Sarabun', sans-serif;
+    transition:background .15s ease, border-color .15s ease;
+  }
+  .cert-list-item:hover{
+    background:#efe8d8;
+    border-color:var(--gold);
+  }
+  .cert-list-name{
+    font-weight:600;
+    color:var(--navy);
+    font-size:15px;
+  }
+  .cert-list-date{
+    font-size:13px;
+    color:var(--ink-soft);
+    white-space:nowrap;
+  }
   footer{
     padding:24px 20px 44px;
     text-align:center;
@@ -161,14 +206,15 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js?v=2"></script>
-<script src="render.js?v=3"></script>
+<script src="config.js?v=3"></script>
+<script src="render.js?v=4"></script>
 <script>
 const form = document.getElementById('searchForm');
 const input = document.getElementById('codeInput');
 const btn = document.getElementById('searchBtn');
 const msgEl = document.getElementById('searchMsg');
 const resultArea = document.getElementById('resultArea');
+let currentRows = [];
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -182,24 +228,32 @@ form.addEventListener('submit', async (e) => {
   btn.innerHTML = '<span class="spinner"></span> กำลังค้นหา';
 
   try {
-    const { data: student, error } = await supabaseClient
+    const { data: rows, error } = await supabaseClient
       .from('students')
       .select('*, templates(*)')
       .eq('student_code', code)
-      .maybeSingle();
+      .order('created_at', { ascending: false });
 
     if (error) throw error;
 
-    if (!student) {
+    if (!rows || rows.length === 0) {
       msgEl.innerHTML = `<div class="msg msg-error">ไม่พบข้อมูลรหัสนักเรียนนี้ กรุณาตรวจสอบรหัสอีกครั้ง</div>`;
       return;
     }
-    if (!student.templates) {
+
+    const validRows = rows.filter(r => r.templates);
+    if (validRows.length === 0) {
       msgEl.innerHTML = `<div class="msg msg-error">ยังไม่ได้กำหนดเกียรติบัตรสำหรับนักเรียนคนนี้</div>`;
       return;
     }
 
-    await renderResult(student);
+    if (validRows.length === 1) {
+      currentRows = [];
+      await renderResult(validRows[0]);
+    } else {
+      currentRows = validRows;
+      renderCertList(validRows);
+    }
 
   } catch (err) {
     console.error(err);
@@ -210,8 +264,32 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
-async function renderResult(student) {
+function renderCertList(rows) {
   resultArea.innerHTML = `
+    <div class="cert-list-wrap">
+      <h2 class="cert-list-title">พบเกียรติบัตร ${rows.length} ใบ — เลือกใบที่ต้องการดู</h2>
+      <div class="cert-list" id="certList"></div>
+    </div>
+  `;
+  const listEl = document.getElementById('certList');
+  rows.forEach((row, idx) => {
+    const item = document.createElement('button');
+    item.type = 'button';
+    item.className = 'cert-list-item';
+    const dateStr = row.created_at ? new Date(row.created_at).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
+    item.innerHTML = `
+      <span class="cert-list-name">${escapeHtml(row.templates.name)}</span>
+      <span class="cert-list-date">${escapeHtml(dateStr)}</span>
+    `;
+    item.addEventListener('click', () => renderResult(row));
+    listEl.appendChild(item);
+  });
+}
+
+async function renderResult(student) {
+  const backBtnHtml = currentRows.length > 1 ? `<button class="btn-secondary" id="backToListBtn" style="margin-bottom:18px;">‹ กลับไปดูใบอื่น</button>` : '';
+  resultArea.innerHTML = `
+    ${backBtnHtml}
     <div class="cert-frame">
       <canvas id="certCanvas"></canvas>
     </div>
@@ -223,13 +301,17 @@ async function renderResult(student) {
     </div>
   `;
 
+  if (currentRows.length > 1) {
+    document.getElementById('backToListBtn').addEventListener('click', () => renderCertList(currentRows));
+  }
+
   const img = await loadImage(student.templates.background_url);
   const canvas = document.getElementById('certCanvas');
   await drawCertificate(canvas, img, student.templates.fields, student);
 
   document.getElementById('downloadBtn').addEventListener('click', () => {
     const link = document.createElement('a');
-    link.download = `เกียรติบัตร-${student.student_code}.png`;
+    link.download = `เกียรติบัตร-${student.student_code}-${student.templates.name}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
   });
